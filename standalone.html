@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pushing electrons: resonance, animated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Pushing electrons: styles */
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#E8EEF4; --paper:#FBFCFE; --panel:#FFFFFF; --grid:#E1E8F0;
+  --ink:#1B2740; --muted:#566381; --line:#D3DCE7;
+  --arrow:#0C9A6F; --on-arrow:#FFFFFF; --pos:#2754C0; --neg:#C5352B;
+  --soft:#E3F4EE;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F141B; --paper:#151C25; --panel:#19212C; --grid:#1D2733;
+    --ink:#E3EAF3; --muted:#95A3B8; --line:#2A3646;
+    --arrow:#43D9A0; --on-arrow:#08231A; --pos:#7FA9FF; --neg:#FF8274; --soft:#173228;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --paper:#151C25; --panel:#19212C; --grid:#1D2733;
+  --ink:#E3EAF3; --muted:#95A3B8; --line:#2A3646;
+  --arrow:#43D9A0; --on-arrow:#08231A; --pos:#7FA9FF; --neg:#FF8274; --soft:#173228;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.55}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--arrow);outline-offset:2px}
+.wrap{max-width:1320px;margin:0 auto;padding:24px 20px 48px}
+header{margin-bottom:20px;max-width:72ch}
+h1{font-size:2rem;line-height:1.15;margin:0 0 4px;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted)}
+.app{display:grid;grid-template-columns:240px minmax(0,1fr) 330px;gap:20px;align-items:start}
+
+/* molecule list */
+nav.examples{position:sticky;top:16px;display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 32px)}
+.nav-top{display:flex;gap:6px;align-items:center}
+#search{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 10px}
+#search::placeholder{color:var(--muted)}
+#randBtn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 10px;cursor:pointer;white-space:nowrap}
+#countLabel{font-size:.85rem;color:var(--muted);margin:0 2px}
+#exList{overflow-y:auto;display:flex;flex-direction:column;gap:2px;padding-right:4px;min-height:0}
+.cat{font-size:.85rem;color:var(--muted);margin:14px 12px 4px;font-weight:700}
+.cat:first-child{margin-top:4px}
+.ex-btn{text-align:left;background:transparent;border:1px solid transparent;border-radius:10px;padding:7px 12px;cursor:pointer;line-height:1.3}
+.ex-btn .name{display:block;font-weight:700}
+.ex-btn small{display:block;color:var(--muted);font-size:.82rem;margin-top:1px}
+.ex-btn:hover{background:var(--panel)}
+.ex-btn[aria-current="true"]{background:var(--panel);border-color:var(--line);box-shadow:inset 3px 0 0 var(--arrow)}
+.empty-nav{color:var(--muted);padding:8px 12px;margin:0}
+
+/* stage */
+.stage{position:relative;background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:20px 20px;background-position:-1px -1px;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+#mol{display:block;width:100%;height:auto;transition:opacity .18s ease}
+#mol.fade{opacity:0}
+.stage-tag{position:absolute;top:10px;left:16px;font-family:Kalam,'Comic Sans MS',cursive;font-size:1.25rem;color:var(--muted);pointer-events:none}
+.forms{display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;padding:0 12px 14px}
+.pill{min-width:38px;height:34px;padding:0 11px;border-radius:17px;border:1.5px solid var(--line);background:var(--panel);cursor:pointer;font-weight:700}
+.pill.minor{border-style:dashed}
+.pill[aria-pressed="true"]{border-color:var(--ink);border-style:solid;background:var(--ink);color:var(--paper)}
+.rarr{color:var(--muted);font-size:1.15rem}
+.gap{width:12px}
+
+.bond{stroke:var(--ink);stroke-width:2.6;stroke-linecap:round}
+.bond.dash{stroke-dasharray:5 6}
+.atom{font-size:22px;font-weight:700;fill:var(--ink);paint-order:stroke;stroke:var(--paper);stroke-width:7px;stroke-linejoin:round}
+.lp circle{fill:var(--ink)}
+.charge circle{fill:var(--paper);stroke-width:1.8}
+.charge text{font-size:16px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.charge.pos circle{stroke:var(--pos)} .charge.pos text{fill:var(--pos)}
+.charge.neg circle{stroke:var(--neg)} .charge.neg text{fill:var(--neg)}
+.delta{font-family:Kalam,cursive;font-size:21px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.delta.pos{fill:var(--pos)} .delta.neg{fill:var(--neg)}
+.shaft{fill:none;stroke:var(--arrow);stroke-width:2.5;stroke-linecap:round}
+.head{fill:var(--arrow)}
+.e{fill:var(--arrow);filter:drop-shadow(0 0 3px var(--arrow))}
+.hit{cursor:pointer;fill:transparent;stroke:transparent}
+.hit-line{stroke:transparent;stroke-width:20;stroke-linecap:round;cursor:pointer}
+.hit:hover{stroke:var(--arrow);stroke-opacity:.25}
+.hit-line:hover{stroke:var(--arrow);stroke-opacity:.14}
+.sel-line{stroke:var(--arrow);stroke-opacity:.3;stroke-width:16;stroke-linecap:round}
+.sel-dot{fill:var(--arrow);fill-opacity:.25;stroke:var(--arrow);stroke-width:2}
+.pulse{fill:none;stroke:var(--arrow);stroke-width:2.5;animation:pulse 1.2s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{0%{opacity:1;transform:scale(.6)}100%{opacity:0;transform:scale(1.6)}}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{border:0;background:transparent;padding:7px 14px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);font-weight:700}
+.btn{border:1px solid var(--line);background:var(--panel);padding:9px 16px;border-radius:10px;cursor:pointer}
+.btn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);font-weight:700}
+.btn.primary{background:var(--arrow);border-color:var(--arrow);color:var(--on-arrow);font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.speed{margin-left:auto;color:var(--muted);display:flex;gap:8px;align-items:center}
+.speed select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.try{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.try[hidden]{display:none}
+.try p{margin:0;flex:1 1 260px}
+.try p.good{color:var(--arrow);font-weight:700}
+.try p.bad{color:var(--neg)}
+
+/* notes */
+aside.notes{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+aside h2{font-size:1.4rem;margin:0 0 6px;line-height:1.2}
+aside h3{font-size:1rem;margin:18px 0 4px}
+aside p{margin:0 0 8px}
+#exIntro{color:var(--muted)}
+#steps{list-style:none;margin:6px 0 0;padding:0}
+#steps li{position:relative;padding:6px 6px 6px 28px;border-radius:8px;transition:background .2s}
+#steps li::before{content:"";position:absolute;left:4px;top:11px;width:16px;height:12px;border:2.5px solid var(--arrow);border-color:var(--arrow) var(--arrow) transparent transparent;border-radius:0 12px 0 0}
+#steps li.active{background:var(--soft)}
+#steps li.empty{color:var(--muted);padding-left:0}
+#steps li.empty::before{display:none}
+.result{margin-top:10px!important;padding:10px 12px;border-left:3px solid var(--arrow);background:var(--soft);border-radius:0 8px 8px 0}
+.result:empty{display:none}
+#nextBtn{width:100%;margin-top:16px;text-align:left}
+details{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:700}
+details ul{padding-left:18px;margin:8px 0 0}
+details li{margin-bottom:6px}
+
+@media (max-width:1100px){
+  .app{grid-template-columns:minmax(0,1fr) 320px}
+  nav.examples{grid-column:1 / -1;position:static;max-height:none}
+  #exList{max-height:220px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px}
+}
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  h1{font-size:1.6rem}
+  .speed{margin-left:0}
+  .stage-tag{font-size:1.05rem}
+}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none;opacity:.8}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Pushing electrons</h1>
+    <p>Watch resonance happen one curved arrow at a time, then try drawing the arrows yourself.</p>
+  </header>
+  <div class="app">
+    <nav class="examples" aria-label="Molecules">
+      <div class="nav-top">
+        <input id="search" type="search" placeholder="Search molecules" aria-label="Search molecules">
+        <button id="randBtn">Random</button>
+      </div>
+      <span id="countLabel"></span>
+      <div id="exList"></div>
+    </nav>
+    <main>
+      <div class="stage">
+        <div class="stage-tag" id="stageTag"></div>
+        <svg id="mol" viewBox="0 0 600 320" role="img" aria-label="Molecule with resonance arrows"></svg>
+        <div class="forms" id="formPills"></div>
+      </div>
+      <div class="controls">
+        <div class="seg" role="group" aria-label="Mode">
+          <button data-mode="watch" aria-pressed="true">Watch</button>
+          <button data-mode="try" aria-pressed="false">Try it</button>
+        </div>
+        <button class="btn primary" id="pushBtn">Push electrons</button>
+        <button class="btn" id="hybridBtn" aria-pressed="false">Show hybrid</button>
+        <label class="speed">Speed
+          <select id="speedSel"><option value="1.8">Slow</option><option value="1" selected>Normal</option><option value="0.6">Fast</option></select>
+        </label>
+      </div>
+      <div class="try" id="tryBox" hidden>
+        <p id="tryMsg"></p>
+        <button class="btn" id="hintBtn">Show me where to start</button>
+      </div>
+    </main>
+    <aside class="notes">
+      <h2 id="exName"></h2>
+      <p id="exIntro"></p>
+      <h3 id="formHead"></h3>
+      <p id="formNote"></p>
+      <div id="stepsSec">
+        <h3 id="stepsHead">What the arrows do</h3>
+        <ul id="steps"></ul>
+        <p class="result" id="result"></p>
+      </div>
+      <button class="btn" id="nextBtn">Next molecule</button>
+      <details>
+        <summary>Rules for pushing electrons</summary>
+        <ul>
+          <li>Atoms never move. Only electrons do: lone pairs and π bonds.</li>
+          <li>Single (σ) bonds stay put. They're the skeleton.</li>
+          <li>An arrow starts at electrons and points to where they end up, either a new bond or a new lone pair.</li>
+          <li>C, N and O can't go past eight electrons. If one arrow adds electrons to an atom, another arrow usually has to take some away.</li>
+          <li>Total charge never changes. It only moves.</li>
+          <li>No single structure is the real molecule. The real thing is the hybrid, a blend of all the contributors.</li>
+          <li>The best contributors have full octets, the fewest charges, and any negative charge on the more electronegative atom.</li>
+        </ul>
+      </details>
+    </aside>
+  </div>
+</div>
+<script>
+/* Pushing electrons: chemistry engine.
+   Builds every resonance contributor by applying curved arrows to the first structure,
+   then computes lone pairs, formal charges, layout and major/minor ranking. */
+
+const BL = 70;
+const ELS = {H:[1,2.20,'hydrogen'],C:[4,2.55,'carbon'],N:[5,3.04,'nitrogen'],O:[6,3.44,'oxygen'],S:[6,2.58,'sulfur'],P:[5,2.19,'phosphorus'],Cl:[7,3.16,'chlorine'],Br:[7,2.96,'bromine'],F:[7,3.98,'fluorine']};
+const bkey = (a,b) => a < b ? a + '-' + b : b + '-' + a;
+const R2D = Math.PI/180;
+
+/* ---------- simulator ---------- */
+function parseArrow(s) {
+  const [f, t] = s.split('>');
+  const side = x => x.includes('-') ? {bond: bkey(...x.split('-'))} : {atom: x};
+  const from = side(f), to = side(t);
+  if (from.atom) { from.lp = from.atom; delete from.atom; }
+  return {from, to};
+}
+function reverseArrow(a) {
+  if (a.from.lp) return {from: {bond: a.to.bond}, to: {atom: a.from.lp}};
+  if (a.to.atom) return {from: {lp: a.to.atom}, to: {bond: a.from.bond}};
+  return {from: {bond: a.to.bond}, to: {bond: a.from.bond}};
+}
+function bondSum(P, f, id) { let s = 0; for (const k in P.bonds) { const b = P.bonds[k]; if (b.a === id || b.b === id) s += f.bonds[k]; } return s; }
+function electrons(P, f, id) { const A = P.atoms[id]; return 2*f.lp[id] + 2*(bondSum(P, f, id) + A.h); }
+function applyArrows(P, f, arrows, errs, label) {
+  const g = {bonds: {...f.bonds}, lp: {...f.lp}, q: {}};
+  for (const a of arrows) {
+    if (a.from.lp) { if (g.lp[a.from.lp] < 1) errs.push(`${label}: no lone pair on ${a.from.lp}`); g.lp[a.from.lp]--; }
+    else { if (!(a.from.bond in g.bonds)) errs.push(`${label}: no bond ${a.from.bond}`); if (g.bonds[a.from.bond] < 2) errs.push(`${label}: ${a.from.bond} has no π bond`); g.bonds[a.from.bond]--; }
+    if (a.to.bond) { if (!(a.to.bond in g.bonds)) errs.push(`${label}: no bond ${a.to.bond}`); g.bonds[a.to.bond]++; }
+    else g.lp[a.to.atom]++;
+  }
+  for (const id in P.atoms) {
+    const A = P.atoms[id];
+    const q = ELS[A.el][0] - 2*g.lp[id] - bondSum(P, g, id) - A.h;
+    if (q) g.q[id] = q;
+  }
+  return g;
+}
+const sameForm = (P, f, g) => Object.keys(P.bonds).every(k => f.bonds[k] === g.bonds[k]) && Object.keys(P.atoms).every(k => f.lp[k] === g.lp[k]);
+
+function normA(a) { a %= 360; return a < 0 ? a + 360 : a; }
+function spread(blocked, n) {
+  if (!n) return [];
+  if (!blocked.length) return Array.from({length: n}, (_, i) => normA(-90 + 360*i/n));
+  const b = [...new Set(blocked.map(x => Math.round(normA(x))))].sort((x, y) => x - y);
+  const gaps = b.map((s, i) => ({s, size: (i+1 < b.length ? b[i+1] : b[0] + 360) - s, m: 0}));
+  for (let k = 0; k < n; k++) { let best = gaps[0]; for (const g of gaps) if (g.size/(g.m+1) > best.size/(best.m+1) + 1e-6) best = g; best.m++; }
+  const out = [];
+  for (const g of gaps) for (let j = 1; j <= g.m; j++) out.push(Math.round(normA(g.s + g.size*j/(g.m+1))));
+  return out;
+}
+
+function prep(raw) {
+  if (raw._p) return raw._p;
+  const errs = [];
+  const P = {raw, name: raw.n, cat: raw.c, blurb: raw.b, intro: raw.i, hybrid: raw.h, atoms: {}, bonds: {}, centers: {}, errs};
+  // coordinates
+  for (const id in raw.atoms) {
+    const s = raw.atoms[id];
+    let x, y, label, o;
+    if (typeof s[0] === 'number') { [x, y, label, o] = s; }
+    else { const r = P.atoms[s[0]]; const t = s[1]*R2D, l = BL*((s[3] && s[3].len) || 1); x = r.x + l*Math.cos(t); y = r.y + l*Math.sin(t); label = s[2]; o = s[3]; }
+    o = o || {};
+    let el = o.el, h = o.h;
+    if (label === 'H') { el = 'H'; h = 0; }
+    if (el === undefined) el = label ? label.replace(/H\d*/g, '') : 'C';
+    if (h === undefined) { if (label) { h = 0; label.replace(/H(\d*)/g, (m, d) => { h += d ? +d : 1; }); } else h = null; }
+    let anchor = o.a;
+    if (!anchor) anchor = (label && label.length > 1 && label !== el) ? (label[0] === 'H' ? 'end' : 'start') : 'middle';
+    if (!ELS[el]) errs.push('unknown element ' + el);
+    P.atoms[id] = {id, x, y, label, el, h, anchor, qa: o.qa};
+  }
+  for (const s of raw.bonds.trim().split(/\s+/)) {
+    const [pair, c] = s.split('@'); const [a, b] = pair.split('-');
+    if (!P.atoms[a] || !P.atoms[b]) errs.push('bad bond ' + s);
+    P.bonds[bkey(a, b)] = {a, b, c: c || null};
+  }
+  // fit into view
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+  for (const id in P.atoms) {
+    const A = P.atoms[id], w = A.label ? A.label.length*12 : 0;
+    const l = A.anchor === 'end' ? A.x - w : A.x - 10, r = A.anchor === 'start' ? A.x + w : A.x + 10;
+    x0 = Math.min(x0, l - 26); x1 = Math.max(x1, r + 26); y0 = Math.min(y0, A.y - 34); y1 = Math.max(y1, A.y + 34);
+  }
+  const sc = Math.min(1.15, 540/(x1 - x0), 255/(y1 - y0)), cx = (x0 + x1)/2, cy = (y0 + y1)/2;
+  for (const id in P.atoms) { const A = P.atoms[id]; A.x = 300 + (A.x - cx)*sc; A.y = 168 + (A.y - cy)*sc; }
+  for (const k in (raw.centers || {})) { const c = raw.centers[k]; P.centers[k] = {x: 300 + (c.x - cx)*sc, y: 168 + (c.y - cy)*sc}; }
+  // first form
+  const f0 = {bonds: {}, q: {...(raw.q || {})}, lp: {}};
+  for (const k in P.bonds) f0.bonds[k] = 1;
+  for (const s of (raw.d || '').split(/\s+/).filter(Boolean)) { const k = bkey(...s.split('-')); if (!(k in f0.bonds)) errs.push('bad double ' + s); f0.bonds[k] = 2; }
+  for (const s of (raw.t || '').split(/\s+/).filter(Boolean)) { const k = bkey(...s.split('-')); if (!(k in f0.bonds)) errs.push('bad triple ' + s); f0.bonds[k] = 3; }
+  for (const id in P.atoms) {
+    const A = P.atoms[id], q = f0.q[id] || 0, bs = bondSum(P, f0, id);
+    if (A.h === null) A.h = 4 - bs - (q ? 1 : 0);
+    const lp = (ELS[A.el][0] - q - bs - A.h)/2;
+    if (lp < 0 || lp !== Math.floor(lp)) errs.push(`bad lone pairs on ${id}: ${lp}`);
+    f0.lp[id] = lp;
+  }
+  // forms via electron pushing
+  let steps = raw.steps.map(s => s.trim().split(/\s+/).map(parseArrow));
+  if (steps.length === 1) steps.push(steps[0].map(reverseArrow).reverse());
+  const forms = [f0];
+  steps.forEach((arrows, i) => {
+    const g = applyArrows(P, forms[i], arrows, errs, `${raw.n} step ${i+1}`);
+    if (i === steps.length - 1) { if (!sameForm(P, g, f0)) errs.push(`${raw.n}: cycle does not close`); }
+    else forms.push(g);
+  });
+  // octet check
+  forms.forEach((f, i) => { for (const id in P.atoms) { const A = P.atoms[id]; if ('CNO'.includes(A.el) && A.el.length === 1 && electrons(P, f, id) > 8) errs.push(`${raw.n} form ${i}: ${id} exceeds octet`); } });
+  // lone pair angles & charge positions
+  const blocked = {};
+  for (const id in P.atoms) {
+    const A = P.atoms[id], bl = [];
+    for (const k in P.bonds) { const b = P.bonds[k]; if (b.a === id || b.b === id) { const o = P.atoms[b.a === id ? b.b : b.a]; bl.push(Math.atan2(o.y - A.y, o.x - A.x)/R2D); } }
+    if (A.anchor === 'start') bl.push(0); if (A.anchor === 'end') bl.push(180);
+    blocked[id] = bl;
+  }
+  const lpCache = {};
+  const lpAngles = (id, n) => { const k = id + ':' + n; return lpCache[k] || (lpCache[k] = spread(blocked[id], n)); };
+  forms.forEach(f => { f.lpA = {}; for (const id in P.atoms) f.lpA[id] = lpAngles(id, f.lp[id]); });
+  for (const id in P.atoms) {
+    const A = P.atoms[id];
+    if (A.qa !== undefined) continue;
+    const all = new Set(); forms.forEach(f => f.lpA[id].forEach(a => all.add(a)));
+    A.qa = spread(blocked[id].concat([...all]), 1)[0];
+  }
+  // ranking
+  forms.forEach(f => {
+    let def = 0, chg = 0, en = 0, big = 0;
+    for (const id in P.atoms) {
+      const A = P.atoms[id], q = f.q[id] || 0, E = ELS[A.el];
+      if ('CNO'.includes(A.el) && A.el.length === 1 && electrons(P, f, id) < 8) def++;
+      chg += Math.abs(q); if (Math.abs(q) >= 2) big++;
+      if (q < 0) en += (3.44 - E[1])*(-q)*2; if (q > 0) en += (E[1] - 2.55)*q*2;
+    }
+    f.def = def; f.chg = chg; f.en = en; f.score = 100*def + 10*chg + 15*big + en;
+  });
+  const best = Math.min(...forms.map(f => f.score));
+  const allEq = forms.every(f => f.score - best < 0.3);
+  forms.forEach((f, i) => {
+    f.name = String.fromCharCode(65 + i);
+    f.tag = allEq ? 'equal' : (f.score - best < 0.3 ? 'major' : 'minor');
+    if (raw.tags) f.tag = raw.tags[i] === 'M' ? 'major' : raw.tags[i] === 'm' ? 'minor' : 'equal';
+  });
+  P.forms = forms;
+  P.steps = steps;
+  return P;
+}
+
+
+/* Pushing electrons: molecule data.
+   Each entry gives the first structure and the arrows; engine.js derives the rest.
+   See README.md for the format. */
+
+function ring(pre, n, start, labels = {}) {
+  const R = BL / (2*Math.sin(Math.PI/n));
+  const atoms = {}, bonds = [];
+  for (let i = 0; i < n; i++) {
+    const t = (start + 360*i/n) * R2D;
+    atoms[pre+i] = [R*Math.cos(t), R*Math.sin(t), labels[i] || ''];
+    bonds.push(`${pre}${i}-${pre}${(i+1)%n}@${pre}`);
+  }
+  return {atoms, bonds: bonds.join(' '), centers: {[pre]: {x:0, y:0}}};
+}
+
+function annulene(n, sign) {
+  const R = ring('r', n, -90);
+  const d = [];
+  for (let j = 1; j+1 < n; j += 2) d.push(`r${j}-r${j+1}`);
+  const steps = [];
+  let k = 0;
+  for (let s = 0; s < n; s++) {
+    const a = k, b = (k+1)%n, c = (k+2)%n;
+    steps.push(sign < 0 ? `r${a}>r${a}-r${b} r${b}-r${c}>r${c}` : `r${b}-r${c}>r${a}-r${b}`);
+    k = c;
+  }
+  return {atoms: R.atoms, bonds: R.bonds, centers: R.centers, d: d.join(' '), q: {r0: sign}, steps};
+}
+
+const K1 = 'c0-c1 c2-c3 c4-c5';
+const KSHIFT = 'c0-c5>c0-c1 c1-c2>c2-c3 c3-c4>c4-c5';
+const donorSteps = D => [`${D}>${D}-c0 c0-c1>c1`, 'c1>c1-c2 c2-c3>c3', 'c3>c3-c4 c4-c5>c5', `c5>c0-c5 ${D}-c0>${D}`, KSHIFT];
+const accSteps = (X, Y) => [`c0-c1>c0-${X}` + (Y ? ` ${X}-${Y}>${Y}` : ''), 'c2-c3>c1-c2', 'c4-c5>c3-c4', (Y ? `${Y}>${X}-${Y} ` : '') + `c0-${X}>c0-c5`, KSHIFT];
+
+function benz(extraAtoms, extraBonds, rest) {
+  const R = ring('c', 6, -90);
+  return Object.assign({atoms: Object.assign({}, R.atoms, extraAtoms), bonds: R.bonds + ' ' + extraBonds, centers: R.centers, d: K1 + (rest.d ? ' ' + rest.d : '')}, rest, {d: K1 + (rest.d ? ' ' + rest.d : '')});
+}
+
+/* ---------- the molecules ---------- */
+const EX = [
+/* ===== Allylic & conjugated ===== */
+{n:'Allyl cation', c:'Allylic & conjugated', b:'A + charge that moves',
+ i:'A positive carbon sits next to a C=C. The π electrons slide over to fill the empty orbital, so the + isn\u2019t stuck on one end.',
+ h:'Each end carries about half a + charge, and both C\u2013C bonds are 1\u00BD bonds. Spreading the charge is why allylic cations form so easily (think SN1 at allylic positions).',
+ atoms:{a:[0,0,'H2C'],b:['a',30,''],c:['b',-30,'CH2']}, bonds:'a-b b-c', d:'a-b', q:{c:1}, steps:['a-b>b-c']},
+{n:'Allyl anion', c:'Allylic & conjugated', b:'A lone pair next to a π bond',
+ i:'A carbanion next to a C=C. The lone pair can become a π bond, pushing the old π electrons to the far end.',
+ h:'The negative charge is shared by both ends; the middle carbon never carries it. That spacing (ends only) is the signature of allylic systems.',
+ atoms:{a:[0,0,'H2C'],b:['a',30,''],c:['b',-30,'CH2']}, bonds:'a-b b-c', d:'a-b', q:{c:-1}, steps:['c>b-c a-b>a']},
+{n:'Pentadienyl cation', c:'Allylic & conjugated', b:'Charge on every other carbon',
+ i:'Two C=C bonds conjugated with a carbocation. The + hops two carbons at a time.',
+ h:'The + is spread over C1, C3 and C5, never on C2 or C4. More conjugation means more delocalization and a more stable cation.',
+ atoms:{a:[0,0,'H2C'],b:['a',30,''],c:['b',-30,''],d2:['c',30,''],e:['d2',-30,'CH2']}, bonds:'a-b b-c c-d2 d2-e', d:'b-c d2-e', q:{a:1},
+ steps:['b-c>a-b','d2-e>c-d2','c-d2>d2-e a-b>b-c']},
+{n:'1,3-Butadiene', c:'Allylic & conjugated', b:'Why the middle bond is short',
+ i:'No charges to start with. Pushing electrons creates a charge-separated structure, a small but real contributor.',
+ h:'The C2\u2013C3 bond has a little double-bond character, so it\u2019s shorter than a normal single bond (1.47 vs 1.54 \u00C5). That\u2019s the conjugation you\u2019ll see in UV spectra and Diels\u2013Alder reactions.',
+ atoms:{a:[0,0,'H2C'],b:['a',30,''],c:['b',-30,''],d2:['c',30,'CH2']}, bonds:'a-b b-c c-d2', d:'a-b c-d2', steps:['a-b>b-c c-d2>d2']},
+{n:'Propargyl cation', c:'Allylic & conjugated', b:'A triple bond shares the charge',
+ i:'A carbocation next to a C\u2261C. One of the triple bond\u2019s π bonds can move over, giving an allene-type cation.',
+ h:'The + is split between the CH\u2082 end and the far CH end. The same kind of resonance explains how propargyl and allenyl products interconvert.',
+ atoms:{a:[0,0,'HC'],b:['a',0,'C'],c:['b',0,'CH2']}, bonds:'a-b b-c', t:'a-b', q:{c:1}, steps:['a-b>b-c']},
+
+/* ===== Carbocations ===== */
+{n:'Oxocarbenium ion', c:'Cations', b:'Oxygen rescues a carbocation',
+ i:'A carbocation next to an oxygen. The oxygen\u2019s lone pair fills the empty orbital.',
+ h:'The O=C form is major because every atom has an octet, even though the + ends up on oxygen. These ions show up in acetal formation and sugar chemistry.',
+ atoms:{a:[0,0,'H2C'],o:['a',30,'O'],m:['o',-30,'CH3']}, bonds:'a-o o-m', d:'a-o', q:{o:1}, steps:['a-o>o']},
+{n:'Iminium ion', c:'Cations', b:'Nitrogen does it even better',
+ i:'Nitrogen is a better lone-pair donor than oxygen, so iminium ions are quite stable.',
+ h:'Mostly C=N\u207A with some carbocation character at carbon. That carbon is where nucleophiles attack (reductive amination, Mannich reaction).',
+ atoms:{a:[0,0,'H2C'],n:['a',30,'N'],m1:['n',-30,'CH3'],m2:['n',90,'CH3']}, bonds:'a-n n-m1 n-m2', d:'a-n', q:{n:1}, steps:['a-n>n']},
+{n:'Acylium ion', c:'Cations', b:'The Friedel\u2013Crafts electrophile',
+ i:'The acylium ion from Friedel\u2013Crafts acylation. The triple-bonded form looks odd but has octets everywhere.',
+ h:'The C\u2261O\u207A form dominates, which is why acylium ions don\u2019t rearrange like ordinary carbocations. The electrophile is still the carbon.',
+ atoms:{m:[0,0,'H3C'],c:['m',0,'C'],o:['c',0,'O']}, bonds:'m-c c-o', t:'c-o', q:{o:1}, steps:['c-o>o']},
+{n:'Protonated ketone', c:'Cations', b:'Why acid activates C=O',
+ i:'Adding H\u207A to a carbonyl oxygen. Push the C=O π bond onto oxygen and a carbocation appears.',
+ h:'The minor carbocation form shows why acid catalysis works: protonation makes the carbonyl carbon much more electrophilic.',
+ atoms:{m1:[0,0,'H3C'],c:['m1',-30,'C'],m2:['c',30,'CH3'],o:['c',-90,'OH']}, bonds:'m1-c c-m2 c-o', d:'c-o', q:{o:1}, steps:['c-o>o']},
+{n:'Diazonium ion', c:'Cations', b:'N\u2261N\u207A and its minor partner',
+ i:'Diazonium ions are famous leaving groups. The minor contributor puts the + on the terminal nitrogen.',
+ h:'Mostly N\u2261N\u207A. Losing N\u2082 gas is so favorable that diazonium ions are great for making aryl halides, phenols and azo dyes.',
+ atoms:{m:[0,0,'H3C'],n1:['m',0,'N'],n2:['n1',0,'N']}, bonds:'m-n1 n1-n2', t:'n1-n2', q:{n1:1}, steps:['n1-n2>n1']},
+
+/* ===== Carbonyl groups ===== */
+{n:'Ketone C=O', c:'Carbonyl groups', b:'The polarized carbonyl',
+ i:'Acetone. Even a neutral carbonyl has a charge-separated contributor.',
+ h:'The C=O is polarized: \u03B4+ carbon, \u03B4\u2212 oxygen. That\u2019s why nucleophiles attack the carbon of every carbonyl.',
+ atoms:{m1:[0,0,'H3C'],c:['m1',-30,'C'],m2:['c',30,'CH3'],o:['c',-90,'O']}, bonds:'m1-c c-m2 c-o', d:'c-o', steps:['c-o>o']},
+{n:'Carboxylate', c:'Carbonyl groups', b:'Why carboxylic acids are acidic',
+ i:'Acetate, formed when acetic acid loses H\u207A. Where does the negative charge go?',
+ h:'Both C\u2013O bonds are identical (about 1.26 \u00C5) and each oxygen holds half the charge. That stabilization makes carboxylic acids about 10\u00B9\u00B9 times more acidic than alcohols.',
+ atoms:{m:[0,0,'H3C'],c:['m',-30,'C'],o1:['c',-90,'O'],o2:['c',30,'O']}, bonds:'m-c c-o1 c-o2', d:'c-o1', q:{o2:-1}, steps:['o2>c-o2 c-o1>o1']},
+{n:'Carboxylic acid', c:'Carbonyl groups', b:'OH donates into C=O',
+ i:'The OH oxygen can donate a lone pair into the carbonyl, even before the proton leaves.',
+ h:'A small contribution, but it lowers the carbonyl\u2019s reactivity compared with a ketone.',
+ atoms:{m:[0,0,'H3C'],c:['m',-30,'C'],o1:['c',-90,'O'],o2:['c',30,'OH']}, bonds:'m-c c-o1 c-o2', d:'c-o1', steps:['o2>c-o2 c-o1>o1']},
+{n:'Ester', c:'Carbonyl groups', b:'Less reactive than ketones',
+ i:'Methyl acetate. The ether-type oxygen donates into the C=O.',
+ h:'The donation makes the carbonyl carbon less electrophilic, which is why esters react more slowly with nucleophiles than aldehydes or ketones.',
+ atoms:{m:[0,0,'H3C'],c:['m',-30,'C'],o1:['c',-90,'O'],o2:['c',30,'O'],m2:['o2',-30,'CH3']}, bonds:'m-c c-o1 c-o2 o2-m2', d:'c-o1', steps:['o2>c-o2 c-o1>o1']},
+{n:'Amide', c:'Carbonyl groups', b:'The lone pair that isn\u2019t free',
+ i:'Nitrogen is a strong donor, so an amide\u2019s lone pair is pulled well into the carbonyl.',
+ h:'The C\u2013N bond has partial double-bond character. Amides are flat, the C\u2013N bond doesn\u2019t rotate freely, and amide nitrogens are barely basic. This is why proteins have rigid peptide bonds.',
+ atoms:{m:[0,0,'H3C'],c:['m',-30,'C'],o:['c',-90,'O'],n:['c',30,'NH2']}, bonds:'m-c c-o c-n', d:'c-o', steps:['n>c-n c-o>o']},
+{n:'Acid chloride', c:'Carbonyl groups', b:'A donor that barely donates',
+ i:'Chlorine has lone pairs, but its large 3p orbitals overlap poorly with carbon\u2019s 2p.',
+ h:'The Cl\u207A contributor is very minor. Little donation plus a great leaving group makes acid chlorides the most reactive carboxylic acid derivatives.',
+ atoms:{m:[0,0,'H3C'],c:['m',-30,'C'],o:['c',-90,'O'],cl:['c',30,'Cl']}, bonds:'m-c c-o c-cl', d:'c-o', steps:['cl>c-cl c-o>o']},
+{n:'Enone', c:'Carbonyl groups', b:'The Michael acceptor',
+ i:'A C=C conjugated with C=O. The carbonyl pulls electrons all the way from the far carbon.',
+ h:'The \u03B2-carbon (end of the C=C) is \u03B4+. That\u2019s why soft nucleophiles add there in conjugate (Michael) additions.',
+ atoms:{m:[0,0,'H3C'],c:['m',-30,'C'],o:['c',-90,'O'],ca:['c',30,''],cb:['ca',-30,'CH2']}, bonds:'m-c c-o c-ca ca-cb', d:'c-o ca-cb', steps:['c-o>o ca-cb>c-ca']},
+{n:'Enaminone', c:'Carbonyl groups', b:'Push meets pull',
+ i:'A donor (N) and an acceptor (C=O) at opposite ends of a C=C. Electrons flow all the way across.',
+ h:'Strong push\u2013pull makes the C=C partly single and the C=O partly single. These \u201Cvinylogous amides\u201D behave a lot like amides.',
+ atoms:{n:[0,0,'N'],nm1:['n',210,'H3C'],nm2:['n',90,'CH3'],ca:['n',-30,''],cb:['ca',30,''],c:['cb',-30,'C'],o:['c',-90,'O'],m:['c',30,'CH3']},
+ bonds:'n-nm1 n-nm2 n-ca ca-cb cb-c c-o c-m', d:'ca-cb c-o', steps:['n>n-ca ca-cb>cb-c c-o>o']},
+{n:'Urea', c:'Carbonyl groups', b:'Two nitrogens take turns',
+ i:'Either nitrogen can donate into the carbonyl, giving two equivalent charge-separated contributors.',
+ h:'Both C\u2013N bonds have partial double-bond character and the oxygen is quite electron-rich, which makes urea a strong hydrogen-bond acceptor.',
+ atoms:{c:[0,0,'C'],o:['c',-90,'O'],n1:['c',150,'H2N'],n2:['c',30,'NH2']}, bonds:'c-o c-n1 c-n2', d:'c-o',
+ steps:['n1>c-n1 c-o>o','n2>c-n2 c-n1>n1','o>c-o c-n2>n2']},
+{n:'Carbonate ion', c:'Carbonyl groups', b:'Three oxygens, one double bond',
+ i:'Three oxygens share one π bond and two negative charges.',
+ h:'All three C\u2013O bonds are identical (1\u2153 bonds) and each oxygen carries \u2154 of a negative charge.',
+ atoms:{c:[0,0,'C'],o1:['c',-90,'O'],o2:['c',150,'O'],o3:['c',30,'O']}, bonds:'c-o1 c-o2 c-o3', d:'c-o1', q:{o2:-1,o3:-1},
+ steps:['o2>c-o2 c-o1>o1','o3>c-o3 c-o2>o2','o1>c-o1 c-o3>o3']},
+{n:'Guanidinium ion', c:'Carbonyl groups', b:'The arginine side chain',
+ i:'Three nitrogens around one carbon share a + charge. This is the side chain of arginine.',
+ h:'The + is spread over all three nitrogens, which makes guanidine one of the strongest neutral organic bases (conjugate acid pKa \u2248 13.6).',
+ atoms:{c:[0,0,'C'],n1:['c',-90,'NH2'],n2:['c',150,'H2N'],n3:['c',30,'NH2']}, bonds:'c-n1 c-n2 c-n3', d:'c-n1', q:{n1:1},
+ steps:['n2>c-n2 c-n1>n1','n3>c-n3 c-n2>n2','n1>c-n1 c-n3>n3']},
+{n:'Ketene', c:'Carbonyl groups', b:'A carbonyl with a C=C attached',
+ i:'Ketenes have two cumulated double bonds. Pushing electrons reveals a nucleophilic carbon.',
+ h:'The terminal CH\u2082 carbon is \u03B4\u2212 and the central carbon is very electrophilic. That\u2019s why ketenes react fast with water, alcohols and amines.',
+ atoms:{a:[0,0,'H2C'],c:['a',0,'C'],o:['c',0,'O']}, bonds:'a-c c-o', d:'a-c c-o', steps:['o>c-o a-c>a']},
+
+/* ===== Enolates & donors on C=C ===== */
+{n:'Enolate', c:'Enolates & donors', b:'One ion, two reactive sites',
+ i:'Remove a proton next to a C=O and you get an enolate. The negative charge is shared by oxygen and carbon.',
+ h:'Charge mostly on O, some on C. Enolates can react at either atom; with most carbon electrophiles, they react at carbon (aldol, alkylation).',
+ atoms:{o:[0,0,'O'],c:['o',30,'C'],m:['c',90,'CH3'],a:['c',-30,'CH2']}, bonds:'o-c c-m c-a', d:'c-a', q:{o:-1}, steps:['o>o-c c-a>a']},
+{n:'Enol', c:'Enolates & donors', b:'A neutral nucleophile',
+ i:'The enol form of acetone. The OH oxygen pushes electrons onto carbon.',
+ h:'The \u03B1-carbon of an enol is electron-rich, so enols act as carbon nucleophiles in acid-catalyzed \u03B1-halogenation and aldol reactions.',
+ atoms:{o:[0,0,'HO'],c:['o',30,'C'],m:['c',90,'CH3'],a:['c',-30,'CH2']}, bonds:'o-c c-m c-a', d:'c-a', steps:['o>o-c c-a>a']},
+{n:'Enamine', c:'Enolates & donors', b:'The Stork enamine',
+ i:'Nitrogen is a better donor than oxygen, so enamines are more nucleophilic at carbon than enols.',
+ h:'The \u03B2-carbon is \u03B4\u2212. Enamines alkylate at carbon (Stork enamine synthesis) and give iminium ions that hydrolyze back to ketones.',
+ atoms:{n:[0,0,'N'],m1:['n',150,'H3C'],m2:['n',-90,'CH3'],c:['n',30,''],a:['c',-30,'CH2']}, bonds:'n-m1 n-m2 n-c c-a', d:'c-a', steps:['n>n-c c-a>a']},
+{n:'Enol ether', c:'Enolates & donors', b:'An electron-rich alkene',
+ i:'Methyl vinyl ether. The oxygen makes the C=C electron-rich.',
+ h:'The terminal carbon is \u03B4\u2212, so electrophiles (like H\u207A) add there, making an oxocarbenium ion.',
+ atoms:{m:[0,0,'H3C'],o:['m',30,'O'],c:['o',-30,''],a:['c',30,'CH2']}, bonds:'m-o o-c c-a', d:'c-a', steps:['o>o-c c-a>a']},
+{n:'Vinyl chloride', c:'Enolates & donors', b:'A halogen as a weak donor',
+ i:'Chlorine can donate a lone pair into a C=C, though weakly.',
+ h:'The C\u2013Cl bond gains a little double-bond character, making vinyl halides much less reactive in SN1 and SN2 than alkyl halides.',
+ atoms:{cl:[0,0,'Cl'],c:['cl',-30,''],a:['c',30,'CH2']}, bonds:'cl-c c-a', d:'c-a', steps:['cl>cl-c c-a>a']},
+{n:'Acrylonitrile', c:'Enolates & donors', b:'A nitrile pulls from a C=C',
+ i:'A C=C conjugated with a C\u2261N. The nitrogen can take a lone pair, leaving the far carbon positive.',
+ h:'The terminal CH\u2082 is \u03B4+, so acrylonitrile is a good Michael acceptor and polymerizes readily.',
+ atoms:{a:[0,0,'H2C'],c:['a',-30,''],cn:['c',30,'C'],n:['cn',30,'N']}, bonds:'a-c c-cn cn-n', d:'a-c', t:'cn-n', steps:['cn-n>n a-c>c-cn']},
+{n:'Acetylacetonate', c:'Enolates & donors', b:'Charge over five atoms',
+ i:'The enolate of a 1,3-diketone. The charge can sit on the central carbon or either oxygen.',
+ h:'Spread over O, C and O. This extra delocalization makes 1,3-dicarbonyl C\u2013H bonds unusually acidic (pKa \u2248 9 vs about 19 for acetone).',
+ atoms:{m1:[0,0,'H3C'],c1:['m1',-30,'C'],o1:['c1',-90,'O'],c2:['c1',30,''],c3:['c2',-30,'C'],o2:['c3',-90,'O'],m2:['c3',30,'CH3']},
+ bonds:'m1-c1 c1-o1 c1-c2 c2-c3 c3-o2 c3-m2', d:'c1-o1 c3-o2', q:{c2:-1},
+ steps:['c2>c1-c2 c1-o1>o1','o1>c1-o1 c1-c2>c2-c3 c3-o2>o2','o2>c3-o2 c2-c3>c2']},
+{n:'Dienolate', c:'Enolates & donors', b:'An extended enolate',
+ i:'An enolate with an extra C=C. The charge can travel down the chain to the far (\u03B3) carbon.',
+ h:'Charge on O, the \u03B1-carbon and the \u03B3-carbon. Dienolates can react at either carbon, which gives chemists a way to functionalize the \u03B3 position.',
+ atoms:{o:[0,0,'O'],c1:['o',30,'C'],m:['c1',90,'CH3'],c2:['c1',-30,''],c3:['c2',30,''],c4:['c3',-30,'CH2']},
+ bonds:'o-c1 c1-m c1-c2 c2-c3 c3-c4', d:'c1-c2 c3-c4', q:{o:-1},
+ steps:['o>o-c1 c1-c2>c2','c2>c2-c3 c3-c4>c4','c4>c3-c4 c2-c3>c1-c2 c1-o>o']},
+{n:'Nitronate', c:'Enolates & donors', b:'The enolate of a nitro compound',
+ i:'Nitroalkanes are surprisingly acidic. Deprotonation gives a nitronate ion.',
+ h:'Charge is shared by the oxygens and the carbon. Nitronates act as carbon nucleophiles in the Henry (nitroaldol) reaction.',
+ atoms:{a:[0,0,'H2C'],n:['a',30,'N'],o1:['n',-30,'O'],o2:['n',90,'O']}, bonds:'a-n n-o1 n-o2', d:'a-n', q:{n:1,o1:-1,o2:-1}, steps:['o1>n-o1 a-n>a']},
+
+/* ===== Small molecules & ions ===== */
+{n:'Nitro group', c:'Small molecules & ions', b:'Two equal N\u2013O bonds',
+ i:'Nitromethane. Nitrogen carries a permanent +, and the \u2212 is shared by the two oxygens.',
+ h:'The N\u2013O bonds are identical (1\u00BD bonds). The nitro group is strongly electron-withdrawing.',
+ atoms:{m:[0,0,'H3C'],n:['m',0,'N'],o1:['n',-60,'O'],o2:['n',60,'O']}, bonds:'m-n n-o1 n-o2', d:'n-o1', q:{n:1,o2:-1}, steps:['o2>n-o2 n-o1>o1']},
+{n:'Nitrate ion', c:'Small molecules & ions', b:'Three equivalent oxygens',
+ i:'The nitrate ion, NO\u2083\u207B. Same pattern as carbonate, with nitrogen in the middle.',
+ h:'All three N\u2013O bonds are identical (1\u2153 bonds), each oxygen carrying \u2154 of a negative charge.',
+ atoms:{n:[0,0,'N'],o1:['n',-90,'O'],o2:['n',150,'O'],o3:['n',30,'O']}, bonds:'n-o1 n-o2 n-o3', d:'n-o1', q:{n:1,o2:-1,o3:-1},
+ steps:['o2>n-o2 n-o1>o1','o3>n-o3 n-o2>o2','o1>n-o1 n-o3>o3']},
+{n:'Nitrite ion', c:'Small molecules & ions', b:'Bent, with a lone pair on N',
+ i:'NO\u2082\u207B. Two oxygens share one π bond and one negative charge.',
+ h:'Both N\u2013O bonds are the same length, and the ion is bent because nitrogen keeps a lone pair.',
+ atoms:{n:[0,0,'N'],o1:['n',150,'O'],o2:['n',30,'O']}, bonds:'n-o1 n-o2', d:'n-o1', q:{o2:-1}, steps:['o2>n-o2 n-o1>o1']},
+{n:'Ozone', c:'Small molecules & ions', b:'Resonance in a pure element',
+ i:'O\u2083. Even with only oxygen atoms, formal charges appear in every octet structure.',
+ h:'Both O\u2013O bonds are identical (1.28 \u00C5, between O\u2013O and O=O). The central oxygen is \u03B4+ and the ends are \u03B4\u2212.',
+ atoms:{o2:[0,0,'O'],o1:['o2',150,'O'],o3:['o2',30,'O']}, bonds:'o1-o2 o2-o3', d:'o1-o2', q:{o2:1,o3:-1}, steps:['o3>o2-o3 o1-o2>o1']},
+{n:'Azide ion', c:'Small molecules & ions', b:'A linear N\u2083\u207B',
+ i:'Azide is linear. The symmetric form is best; moving charge to one end creates a 2\u2212 nitrogen.',
+ h:'Mostly the symmetric N=N=N form, with both ends \u03B4\u2212. The terminal nitrogens are nucleophilic (SN2 with alkyl halides, click chemistry).',
+ atoms:{n1:[0,0,'N'],n2:['n1',0,'N'],n3:['n2',0,'N']}, bonds:'n1-n2 n2-n3', d:'n1-n2 n2-n3', q:{n1:-1,n2:1,n3:-1}, steps:['n1>n1-n2 n2-n3>n3']},
+{n:'Diazomethane', c:'Small molecules & ions', b:'Nucleophilic carbon, great leaving group',
+ i:'CH\u2082N\u2082. The minor contributor puts a negative charge on carbon next to N\u2261N.',
+ h:'The carbon is \u03B4\u2212 and basic. It grabs a proton from a carboxylic acid, then N\u2082 leaves, making methyl esters.',
+ atoms:{a:[0,0,'H2C'],n1:['a',0,'N'],n2:['n1',0,'N']}, bonds:'a-n1 n1-n2', d:'a-n1 n1-n2', q:{n1:1,n2:-1}, steps:['n2>n1-n2 a-n1>a']},
+{n:'Nitrous oxide', c:'Small molecules & ions', b:'Laughing gas',
+ i:'N\u2082O is linear, with the oxygen on one end. Two octet structures contribute.',
+ h:'Both contributors matter. The N\u2013N bond is between double and triple, and the N\u2013O bond is between single and double.',
+ atoms:{n1:[0,0,'N'],n2:['n1',0,'N'],o:['n2',0,'O']}, bonds:'n1-n2 n2-o', t:'n1-n2', q:{n2:1,o:-1}, steps:['o>n2-o n1-n2>n1']},
+{n:'Carbon monoxide', c:'Small molecules & ions', b:'Octets beat charges',
+ i:'CO is best drawn with a triple bond and formal charges, because then both atoms have octets.',
+ h:'Mostly C\u2261O. The lone pair on carbon is why CO binds metals through carbon (and binds hemoglobin so dangerously well).',
+ atoms:{c:[0,0,'C'],o:['c',0,'O']}, bonds:'c-o', t:'c-o', q:{c:-1,o:1}, steps:['c-o>o']},
+{n:'Carbon dioxide', c:'Small molecules & ions', b:'Hidden polarity',
+ i:'CO\u2082 has no net dipole, but its bonds are polar. The minor contributors show it.',
+ h:'The carbon is \u03B4+ and electrophilic, which is how CO\u2082 reacts with Grignard reagents to make carboxylic acids. A mirror-image contributor puts the charges the other way.',
+ atoms:{o1:[0,0,'O'],c:['o1',0,'C'],o2:['c',0,'O']}, bonds:'o1-c c-o2', d:'o1-c c-o2', steps:['c-o1>o1 o2>c-o2']},
+{n:'Cyanate ion', c:'Small molecules & ions', b:'Charge on O or N',
+ i:'OCN\u207B. The negative charge can sit on oxygen or nitrogen.',
+ h:'Both ends are nucleophilic. Reacting at N gives isocyanates; reacting at O gives cyanates.',
+ atoms:{o:[0,0,'O'],c:['o',0,'C'],n:['c',0,'N']}, bonds:'o-c c-n', t:'c-n', q:{o:-1}, steps:['o>o-c c-n>n']},
+{n:'Thiocyanate ion', c:'Small molecules & ions', b:'Sulfur vs nitrogen',
+ i:'SCN\u207B, the sulfur version of cyanate.',
+ h:'Charge is shared by S and N. Soft electrophiles tend to bond to sulfur; hard ones to nitrogen.',
+ atoms:{s:[0,0,'S'],c:['s',0,'C'],n:['c',0,'N']}, bonds:'s-c c-n', t:'c-n', q:{s:-1}, steps:['s>s-c c-n>n']},
+{n:'Nitrile', c:'Small molecules & ions', b:'An electrophilic carbon',
+ i:'Acetonitrile. One π bond of the C\u2261N can move onto nitrogen.',
+ h:'The nitrile carbon is \u03B4+, so nitriles are attacked by nucleophiles (hydrolysis to acids, Grignard addition to make ketones).',
+ atoms:{m:[0,0,'H3C'],c:['m',0,'C'],n:['c',0,'N']}, bonds:'m-c c-n', t:'c-n', steps:['c-n>n']},
+{n:'Isocyanide', c:'Small molecules & ions', b:'A carbon with a lone pair',
+ i:'Methyl isocyanide. Like CO, the triple-bonded form with charges is best.',
+ h:'The terminal carbon has a lone pair and some carbene character. Isocyanides react at carbon with both electrophiles and nucleophiles (Ugi and Passerini reactions).',
+ atoms:{m:[0,0,'H3C'],n:['m',0,'N'],c:['n',0,'C']}, bonds:'m-n n-c', t:'n-c', q:{n:1,c:-1}, steps:['n-c>n']},
+{n:'Nitrone', c:'Small molecules & ions', b:'A 1,3-dipole',
+ i:'Nitrones are 1,3-dipoles: charges can sit on atoms 1 and 3 of a three-atom unit.',
+ h:'Negative charge shared by O and C. This lets nitrones do 1,3-dipolar cycloadditions with alkenes.',
+ atoms:{a:[0,0,'H2C'],n:['a',30,'N'],m:['n',90,'CH3'],o:['n',-30,'O']}, bonds:'a-n n-m n-o', d:'a-n', q:{n:1,o:-1}, steps:['o>n-o a-n>a']},
+{n:'Phosphorus ylide', c:'Small molecules & ions', b:'The Wittig reagent',
+ i:'Ph\u2083P=CH\u2082. Phosphorus can exceed an octet, so a P=C form can be drawn, but the ylide form is the better description.',
+ h:'Mostly P\u207A\u2013C\u207B, because 3d orbitals barely take part in bonding. The nucleophilic carbon attacks carbonyls in the Wittig reaction.',
+ atoms:{p:[0,0,'Ph3P',{el:'P',h:3,a:'end'}],c:['p',0,'CH2']}, bonds:'p-c', q:{p:1,c:-1}, steps:['c>p-c'], tags:'Mm', notes:['Both atoms keep an octet. This ylide picture is the better description.','Phosphorus would need ten electrons here, using d orbitals that barely take part in bonding. Minor contributor.']},
+
+/* ===== Aromatic rings ===== */
+(()=>{const R=ring('c',6,-90);return{n:'Benzene', c:'Aromatic rings', b:'Where do the double bonds go?',
+ i:'Six carbons and three π bonds, with no single correct place to draw them. All three arrows fire at once.',
+ h:'All six C\u2013C bonds are identical (1.39 \u00C5). The six π electrons spread around the whole ring, the root of aromatic stability.',
+ atoms:R.atoms, bonds:R.bonds, centers:R.centers, d:K1, steps:['c0-c1>c1-c2 c2-c3>c3-c4 c4-c5>c5-c0']}})(),
+(()=>{const R=ring('c',6,-90,{0:'N'});return{n:'Pyridine', c:'Aromatic rings', b:'An electron-poor ring',
+ i:'Pyridine is aromatic like benzene. Nitrogen\u2019s extra electronegativity pulls π electrons toward it.',
+ h:'The 2, 4 and 6 positions are \u03B4+. Nucleophiles attack there, and electrophilic substitution is slow. The N lone pair points out of the ring and isn\u2019t part of the aromatic system.',
+ atoms:R.atoms, bonds:R.bonds, centers:R.centers, d:K1, steps:['c0-c1>c0','c2-c3>c1-c2','c4-c5>c3-c4','c0>c0-c5',KSHIFT]}})(),
+...['N','O','S'].map(X=>{const R=ring('r',5,90,{0:X});const nm={N:'Pyrrole',O:'Furan',S:'Thiophene'}[X];
+ const atoms=Object.assign({},R.atoms); let bonds=R.bonds; if(X==='N'){atoms.h=['r0',90,'H'];bonds+=' r0-h'}
+ return{n:nm, c:'Aromatic rings', b:{N:'The N lone pair joins the ring',O:'An oxygen in an aromatic ring',S:'Sulfur\u2019s 3p lone pair'}[X],
+ i:{N:'In pyrrole, the nitrogen\u2019s lone pair is part of the aromatic sextet. Pushing it into the ring puts negative charge on every carbon.',O:'Furan\u2019s oxygen donates one lone pair into the ring; the other stays in the plane.',S:'Thiophene is the most aromatic of the three five-membered heterocycles, because sulfur holds its charge least tightly.'}[X],
+ h:{N:'All four carbons are \u03B4\u2212, so pyrrole is very reactive toward electrophiles, mostly at C2. The nitrogen is \u03B4+ and not basic at all.',O:'The ring carbons are \u03B4\u2212, making furan reactive toward electrophiles (at C2) and a good Diels\u2013Alder diene.',S:'The carbons are \u03B4\u2212. Thiophene undergoes electrophilic substitution at C2 like the others, but behaves the most like benzene.'}[X],
+ atoms, bonds, centers:R.centers, d:'r1-r2 r3-r4',
+ steps:['r0>r0-r1 r1-r2>r2','r2>r2-r3 r3-r4>r4','r4>r0-r4 r0-r1>r1','r1>r1-r2 r2-r3>r3','r3>r3-r4 r0-r4>r0']}}),
+Object.assign(annulene(3,1),{n:'Cyclopropenyl cation', c:'Aromatic rings', b:'The smallest aromatic ring',
+ i:'Two π electrons in a three-membered ring: aromatic by H\u00FCckel\u2019s rule (4n+2 with n = 0).',
+ h:'Each carbon carries \u2153 of the + charge and all three bonds are identical. Despite the strained ring, this cation is surprisingly stable.'}),
+Object.assign(annulene(5,-1),{n:'Cyclopentadienyl anion', c:'Aromatic rings', b:'Six π electrons in five atoms',
+ i:'Deprotonating cyclopentadiene gives an aromatic anion. The lone pair can move to any carbon.',
+ h:'Each carbon carries \u2155 of the charge. Aromaticity makes cyclopentadiene unusually acidic for a hydrocarbon (pKa \u2248 16), and this anion is the ligand in ferrocene.'}),
+Object.assign(annulene(7,1),{n:'Tropylium cation', c:'Aromatic rings', b:'Seven carbons, one + charge',
+ i:'Six π electrons over seven carbons. The + visits every carbon in turn.',
+ h:'Each carbon carries \u2150 of the + charge. Tropylium salts are stable enough to put in a bottle, rare for a carbocation.'}),
+
+/* ===== Substituted benzenes ===== */
+benz({X:['c0',-90,'O']},'c0-X',{n:'Phenoxide', c:'Substituted benzenes', b:'Why phenols are acidic',
+ i:'Phenol loses H\u207A to give phenoxide. The charge spreads into the ring.',
+ h:'The charge is on O and the ortho and para carbons. That stabilization makes phenol a million times more acidic than cyclohexanol (pKa 10 vs 16).',
+ q:{X:-1}, steps:donorSteps('X')}),
+benz({X:['c0',-90,'OH']},'c0-X',{n:'Phenol', c:'Substituted benzenes', b:'A strong ortho/para director',
+ i:'The OH group donates a lone pair into the ring.',
+ h:'Ortho and para carbons are \u03B4\u2212. Phenol undergoes electrophilic aromatic substitution much faster than benzene, at ortho and para.',
+ steps:donorSteps('X')}),
+benz({X:['c0',-90,'NH2']},'c0-X',{n:'Aniline', c:'Substituted benzenes', b:'The most activated ring',
+ i:'Nitrogen\u2019s lone pair is pulled into the ring, charging the ortho and para carbons.',
+ h:'Ortho and para carbons are \u03B4\u2212, so aniline brominates instantly at all three. The delocalized lone pair also makes aniline a much weaker base than alkylamines.',
+ steps:donorSteps('X')}),
+benz({X:['c0',-90,'O'],me:['X',-30,'CH3']},'c0-X X-me',{n:'Anisole', c:'Substituted benzenes', b:'Methoxy: an activating group',
+ i:'Methoxybenzene. The oxygen donates into the ring even though it\u2019s electronegative.',
+ h:'Resonance donation outweighs oxygen\u2019s inductive pull, so OCH\u2083 is activating and directs electrophiles ortho and para.',
+ steps:donorSteps('X')}),
+benz({X:['c0',-90,'Cl']},'c0-X',{n:'Chlorobenzene', c:'Substituted benzenes', b:'Deactivating, yet ortho/para',
+ i:'Chlorine donates a lone pair into the ring, but weakly.',
+ h:'Halogens are the classic exception: inductive withdrawal makes the ring less reactive, but resonance still directs electrophiles to ortho and para.',
+ steps:donorSteps('X')}),
+benz({X:['c0',-90,'CH2']},'c0-X',{n:'Benzyl cation', c:'Substituted benzenes', b:'Why benzylic SN1 is fast',
+ i:'A carbocation attached to a benzene ring. The ring\u2019s π electrons flow toward the empty orbital.',
+ h:'The + is spread over the CH\u2082 and the ortho and para carbons. Benzylic halides ionize easily in SN1 reactions for this reason.',
+ q:{X:1}, steps:accSteps('X')}),
+benz({X:['c0',-90,'CH2']},'c0-X',{n:'Benzyl anion', c:'Substituted benzenes', b:'Why benzylic C\u2013H is acidic',
+ i:'A carbanion next to a benzene ring. The lone pair spreads into the ring.',
+ h:'Charge on CH\u2082 and the ortho and para carbons. That\u2019s why toluene\u2019s CH\u2083 (pKa \u2248 41) is far more acidic than methane\u2019s (\u2248 50).',
+ q:{X:-1}, steps:donorSteps('X')}),
+benz({X:['c0',-90,'C'],xh:['X',-150,'H'],y:['X',-30,'O']},'c0-X X-xh X-y',{n:'Benzaldehyde', c:'Substituted benzenes', b:'A meta director',
+ i:'The carbonyl pulls electrons out of the ring.',
+ h:'Ortho and para carbons are \u03B4+, so electrophiles avoid them. The meta position is least deactivated, which makes CHO a meta director.',
+ d:'X-y', steps:accSteps('X','y')}),
+benz({X:['c0',-90,'N'],y:['X',-150,'O'],z:['X',-30,'O']},'c0-X X-y X-z',{n:'Nitrobenzene', c:'Substituted benzenes', b:'The strongest common deactivator',
+ i:'The nitro group pulls π electrons out of the ring onto oxygen.',
+ h:'Strong \u03B4+ at ortho and para. Nitrobenzene is very slow in electrophilic substitution and goes meta. For nucleophilic aromatic substitution, it activates ortho and para. (The two N\u2013O bonds are also equivalent, thanks to the nitro group\u2019s own resonance, which isn\u2019t shown here.)',
+ d:'X-y', q:{X:1,z:-1}, steps:accSteps('X','y')}),
+benz({X:['c0',-90,'C'],y:['X',-90,'N']},'c0-X X-y',{n:'Benzonitrile', c:'Substituted benzenes', b:'A triple bond pulls from the ring',
+ i:'One π bond of the C\u2261N accepts electrons from the ring.',
+ h:'Ortho and para carbons are \u03B4+, so CN is deactivating and meta-directing.',
+ t:'X-y', steps:accSteps('X','y')}),
+(()=>{const R=ring('c',6,-90);return{n:'Arenium ion', c:'Substituted benzenes', b:'The EAS intermediate',
+ i:'After an electrophile (here Br) adds to benzene, the ring carbon becomes sp\u00B3 and a + appears. This is the sigma complex.',
+ h:'The + is spread over the two ortho carbons and the para carbon. Groups that stabilize those positions speed up electrophilic aromatic substitution and direct it there.',
+ atoms:Object.assign({},R.atoms,{hx:['c0',-120,'H'],br:['c0',-60,'Br']}), bonds:R.bonds+' c0-hx c0-br', centers:R.centers,
+ d:'c2-c3 c4-c5', q:{c1:1}, steps:['c2-c3>c1-c2','c4-c5>c3-c4','c3-c4>c4-c5 c1-c2>c2-c3']}})()
+];
+
+
+/* Pushing electrons: drawing, animation and interface. */
+
+/* ===== UI ===== */
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const ease = p => p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2)/2;
+const lerp = (a, b, t) => a + (b - a)*t;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const svg = $('#mol');
+const L = {};
+['bonds', 'lp', 'charges', 'labels', 'arrows', 'elec', 'hits'].forEach(k => L[k] = el('g', {}, svg));
+
+let cur = 0, P = null, formIdx = 0, mode = 'watch', hybrid = false, busy = false, runId = 0, speed = 1;
+let V = null, sel = null, found = [], arrowObjs = [], hintMark = null;
+const T = ms => ms*speed*(reduce ? .35 : 1);
+
+function animate(dur, fn, id) {
+  return new Promise(res => {
+    const t0 = performance.now();
+    function f(now) {
+      if (id !== runId) { res(false); return; }
+      const t = dur <= 0 ? 1 : Math.min(1, (now - t0)/dur);
+      fn(t);
+      if (t < 1) requestAnimationFrame(f); else res(true);
+    }
+    requestAnimationFrame(f);
+  });
+}
+
+/* ---------- geometry helpers ---------- */
+const nameOf = id => ELS[P.atoms[id].el][2];
+const symOf = id => P.atoms[id].el;
+function lpPos(id, ang, r = 16) { const A = P.atoms[id], t = ang*Math.PI/180; return {x: A.x + r*Math.cos(t), y: A.y + r*Math.sin(t)}; }
+function bondMid(k) { const b = P.bonds[k], A = P.atoms[b.a], B = P.atoms[b.b]; return {x: (A.x + B.x)/2, y: (A.y + B.y)/2}; }
+function nearestAngle(angles, id, pt) {
+  let best = angles[0], bd = 1e9;
+  for (const a of angles) { const p = lpPos(id, a), d = Math.hypot(p.x - pt.x, p.y - pt.y); if (d < bd) { bd = d; best = a; } }
+  return best;
+}
+function resolve(ar, fa, fb) {
+  const r = {from: {...ar.from}, to: {...ar.to}};
+  const tg = r.to.bond ? bondMid(r.to.bond) : P.atoms[r.to.atom];
+  if (r.from.lp) r.from.a = nearestAngle(fa.lpA[r.from.lp], r.from.lp, tg);
+  const sp = r.from.bond ? bondMid(r.from.bond) : lpPos(r.from.lp, r.from.a);
+  if (r.to.atom) {
+    const now = fa.lpA[r.to.atom], nxt = fb.lpA[r.to.atom], fresh = nxt.filter(a => !now.includes(a));
+    r.to.a = nearestAngle(fresh.length ? fresh : nxt, r.to.atom, sp);
+  }
+  return r;
+}
+function ptOf(s) { return s.bond ? bondMid(s.bond) : lpPos(s.lp || s.atom, s.a); }
+
+/* ---------- text generation ---------- */
+const SYM = ['', '\u2013', '=', '\u2261'];
+function bstr(k, o, first) { const b = P.bonds[k]; const [x, y] = first === b.b ? [b.b, b.a] : [b.a, b.b]; return symOf(x) + SYM[o] + symOf(y); }
+function stepText(ar, f) {
+  if (ar.from.lp) { const k = ar.to.bond, o = f.bonds[k]; return `A lone pair on ${nameOf(ar.from.lp)} moves in to make a new π bond: ${bstr(k, o, ar.from.lp)} becomes ${bstr(k, o + 1, ar.from.lp)}.`; }
+  const o = f.bonds[ar.from.bond];
+  if (ar.to.bond) {
+    const b1 = P.bonds[ar.from.bond], b2 = P.bonds[ar.to.bond];
+    const shared = [b1.a, b1.b].find(x => x === b2.a || x === b2.b);
+    return `${o === 3 ? 'One set of' : 'The'} π electrons of ${bstr(ar.from.bond, o, [b1.a, b1.b].find(x => x !== shared))} shift over to the neighboring ${bstr(ar.to.bond, f.bonds[ar.to.bond], shared)} bond.`;
+  }
+  const other = P.bonds[ar.from.bond].a === ar.to.atom ? P.bonds[ar.from.bond].b : P.bonds[ar.from.bond].a;
+  return `${o === 3 ? 'One π bond of' : 'The π bond of'} ${bstr(ar.from.bond, o, other)} breaks, and its electrons move onto ${nameOf(ar.to.atom)} as a lone pair.`;
+}
+const fmtQ = q => (Math.abs(q) > 1 ? Math.abs(q) : '') + (q > 0 ? '+' : '\u2212');
+function chargeList(f) {
+  const items = Object.entries(f.q).map(([id, q]) => `${fmtQ(q)} on ${symOf(id)}`);
+  return items.length ? items.join(', ') : '';
+}
+function resultText(fb) {
+  const tot = Object.values(fb.q).reduce((s, q) => s + q, 0);
+  const cl = chargeList(fb);
+  return (cl ? `Now: ${cl}.` : 'Now there are no formal charges.') + ` Total charge is still ${tot === 0 ? 'zero' : (tot > 0 ? '+' : '\u2212') + Math.abs(tot)}.`;
+}
+function noteFor(f, i) {
+  const parts = [];
+  const defs = Object.keys(P.atoms).filter(id => { const e = P.atoms[id].el; return (e === 'C' || e === 'N' || e === 'O') && electrons(P, f, id) < 8; });
+  if (defs.length) parts.push(defs.map(id => { const n = nameOf(id); return n[0].toUpperCase() + n.slice(1) + ` (${chargeOrBlank(f, id)}) has only ${electrons(P, f, id)} electrons.`; }).join(' '));
+  else parts.push('Every C, N and O has a full octet.');
+  const cl = chargeList(f);
+  parts.push(cl ? `Formal charges: ${cl}.` : 'No formal charges.');
+  const custom = P.raw.notes && P.raw.notes[i];
+  if (custom) parts.push(custom);
+  else if (f.tag === 'equal') parts.push(P.forms.length === 2 ? 'The two contributors are equivalent, so they count equally.' : 'All the contributors are equivalent, so they count equally.');
+  else if (f.tag === 'major') parts.push(P.forms.filter(g => g.tag === 'major').length > 1 ? 'This is one of the major contributors.' : 'This is the major contributor.');
+  else {
+    const best = P.forms.reduce((a, b) => b.score < a.score ? b : a);
+    if (f.def > best.def) parts.push('Minor contributor: fewer atoms have full octets.');
+    else if (f.chg > best.chg) parts.push('Minor contributor: it separates more charge.');
+    else parts.push('Minor contributor: the charges sit on less suitable atoms (\u2212 prefers electronegative atoms, + prefers less electronegative ones).');
+  }
+  return parts.join(' ');
+}
+function chargeOrBlank(f, id) { const q = f.q[id]; return q ? fmtQ(q) : 'neutral'; }
+
+/* ---------- drawing ---------- */
+function setLabel(t, label) {
+  let sub = false;
+  for (const ch of label) {
+    const ts = el('tspan', {}, t);
+    if (/\d/.test(ch)) { ts.setAttribute('dy', '6'); ts.setAttribute('font-size', '15'); sub = true; }
+    else if (sub) { ts.setAttribute('dy', '-6'); sub = false; }
+    ts.textContent = ch;
+  }
+}
+
+function build() {
+  runId++; busy = false; sel = null; found = []; arrowObjs = []; hintMark = null;
+  Object.values(L).forEach(g => g.innerHTML = '');
+  V = {bonds: {}, lps: {}, charges: {}};
+  for (const k in P.bonds) {
+    const g = el('g', {}, L.bonds);
+    V.bonds[k] = {l1: el('line', {class: 'bond'}, g), l2: el('line', {class: 'bond'}, g), l3: el('line', {class: 'bond'}, g)};
+  }
+  for (const id in P.atoms) {
+    const A = P.atoms[id]; if (!A.label) continue;
+    const w = A.el.length > 1 ? 10 : 7.5;
+    const dx = A.anchor === 'start' ? -w : A.anchor === 'end' ? w : 0;
+    setLabel(el('text', {x: A.x + dx, y: A.y + 8, 'text-anchor': A.anchor, class: 'atom'}, L.labels), A.label);
+  }
+  for (const id in P.atoms) {
+    const all = new Set(); P.forms.forEach(f => f.lpA[id].forEach(a => all.add(a)));
+    if (!all.size) continue;
+    V.lps[id] = {};
+    all.forEach(ang => {
+      const g = el('g', {class: 'lp'}, L.lp);
+      const c = lpPos(id, ang), t = ang*Math.PI/180, px = -Math.sin(t)*3.3, py = Math.cos(t)*3.3;
+      el('circle', {cx: c.x + px, cy: c.y + py, r: 2.4}, g); el('circle', {cx: c.x - px, cy: c.y - py, r: 2.4}, g);
+      V.lps[id][ang] = g;
+    });
+  }
+  for (const id in P.atoms) {
+    if (!P.forms.some(f => f.q[id])) continue;
+    const A = P.atoms[id], a = A.qa*Math.PI/180, x = A.x + 29*Math.cos(a), y = A.y + 29*Math.sin(a);
+    const pos = el('g', {class: 'charge pos'}, L.charges); el('circle', {cx: x, cy: y, r: 9.5}, pos);
+    const pt = el('text', {x, y: y + .5}, pos);
+    const neg = el('g', {class: 'charge neg'}, L.charges); el('circle', {cx: x, cy: y, r: 9.5}, neg);
+    const nt = el('text', {x, y: y - .5}, neg);
+    const delta = el('text', {x, y, class: 'delta'}, L.charges);
+    V.charges[id] = {pos, neg, pt, nt, delta};
+  }
+}
+
+function setLine(l, x1, y1, x2, y2) { l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); }
+
+function geomBond(k, d, dashLine) {
+  const b = P.bonds[k], B = V.bonds[k], A = P.atoms[b.a], C = P.atoms[b.b];
+  const dx = C.x - A.x, dy = C.y - A.y, len = Math.hypot(dx, dy), ux = dx/len, uy = dy/len;
+  const sa = A.label ? 15 : 0, sb = C.label ? 15 : 0;
+  const x1 = A.x + ux*sa, y1 = A.y + uy*sa, x2 = C.x - ux*sb, y2 = C.y - uy*sb;
+  let nx = -uy, ny = ux;
+  if (b.c) {
+    const cc = P.centers[b.c], mx = cc.x - (A.x + C.x)/2, my = cc.y - (A.y + C.y)/2;
+    if (nx*mx + ny*my < 0) { nx = -nx; ny = -ny; }
+    setLine(B.l1, x1, y1, x2, y2);
+    const off = 9*Math.min(d, 1), sh = len*.17;
+    setLine(B.l2, x1 + ux*sh + nx*off, y1 + uy*sh + ny*off, x2 - ux*sh + nx*off, y2 - uy*sh + ny*off);
+    B.l2.style.opacity = clamp(d*1.6); B.l3.style.opacity = 0;
+  } else {
+    let off, mid;
+    if (d <= 1) { off = 3.7*d; mid = 0; } else { off = lerp(3.7, 6.3, d - 1); mid = d - 1; }
+    setLine(B.l1, x1 + nx*off, y1 + ny*off, x2 + nx*off, y2 + ny*off);
+    setLine(B.l2, x1 - nx*off, y1 - ny*off, x2 - nx*off, y2 - ny*off);
+    setLine(B.l3, x1, y1, x2, y2);
+    B.l2.style.opacity = 1; B.l3.style.opacity = mid;
+  }
+  B.l2.classList.toggle('dash', dashLine === 2);
+  B.l3.classList.toggle('dash', dashLine === 3);
+}
+
+function applyState(fa, fb, p) {
+  const e = ease(p);
+  for (const k in P.bonds) geomBond(k, lerp(fa.bonds[k] - 1, fb.bonds[k] - 1, e), 0);
+  for (const id in V.lps) for (const ang in V.lps[id]) {
+    const va = fa.lpA[id].includes(+ang) ? 1 : 0, vb = fb.lpA[id].includes(+ang) ? 1 : 0;
+    V.lps[id][ang].style.opacity = lerp(va, vb, e);
+  }
+  for (const id in V.charges) {
+    const c = V.charges[id], qa = fa.q[id] || 0, qb = fb.q[id] || 0;
+    c.pos.style.opacity = lerp(qa > 0 ? 1 : 0, qb > 0 ? 1 : 0, e);
+    c.neg.style.opacity = lerp(qa < 0 ? 1 : 0, qb < 0 ? 1 : 0, e);
+    const shown = e < .5 ? (qa || qb) : (qb || qa);
+    c.pt.textContent = shown > 1 ? shown + '+' : '+';
+    c.nt.textContent = shown < -1 ? (-shown) + '\u2212' : '\u2212';
+    c.pt.style.fontSize = c.nt.style.fontSize = Math.abs(shown) > 1 ? '12px' : '';
+    c.delta.style.opacity = 0;
+  }
+}
+
+function drawHybrid() {
+  for (const k in P.bonds) {
+    const avg = P.forms.reduce((s, f) => s + f.bonds[k], 0)/P.forms.length;
+    const frac = Math.abs(avg - Math.round(avg)) > .01;
+    const top = Math.ceil(avg - 1e-9);
+    geomBond(k, frac ? top - 1 : avg - 1, frac ? top : 0);
+  }
+  for (const id in V.lps) for (const ang in V.lps[id]) V.lps[id][ang].style.opacity = 0;
+  for (const id in V.charges) {
+    const c = V.charges[id], sum = P.forms.reduce((s, f) => s + (f.q[id] || 0), 0);
+    c.pos.style.opacity = 0; c.neg.style.opacity = 0;
+    c.delta.textContent = sum > 0 ? '\u03B4+' : sum < 0 ? '\u03B4\u2212' : '';
+    c.delta.setAttribute('class', 'delta ' + (sum > 0 ? 'pos' : 'neg'));
+    c.delta.style.opacity = sum ? 1 : 0;
+  }
+}
+
+/* ---------- arrows ---------- */
+function toward(p, c, d) { const dx = c.x - p.x, dy = c.y - p.y, l = Math.hypot(dx, dy) || 1; return {x: p.x + dx/l*d, y: p.y + dy/l*d}; }
+function makeArrow(ar0, fa, fb) {
+  const ar = resolve(ar0, fa, fb);
+  const S0 = ptOf(ar.from), Q = ptOf(ar.to);
+  const dx = Q.x - S0.x, dy = Q.y - S0.y, dist = Math.hypot(dx, dy) || 1;
+  let nx = -dy/dist, ny = dx/dist;
+  const M = {x: (S0.x + Q.x)/2, y: (S0.y + Q.y)/2};
+  let R, sg = -1, amt = Math.max(22, dist*.55);
+  if (ar.from.lp) R = P.atoms[ar.from.lp];
+  else if (ar.to.atom) R = P.atoms[ar.to.atom];
+  else {
+    const b1 = P.bonds[ar.from.bond], b2 = P.bonds[ar.to.bond];
+    if (b1.c && b1.c === b2.c) { R = P.centers[b1.c]; sg = 1; amt = dist*.4; }
+    else R = P.atoms[[b1.a, b1.b].find(x => x === b2.a || x === b2.b)];
+  }
+  const vx = (R.x - M.x)*sg, vy = (R.y - M.y)*sg;
+  if (nx*vx + ny*vy < 0) { nx = -nx; ny = -ny; }
+  const C = {x: M.x + nx*amt, y: M.y + ny*amt};
+  const S = toward(S0, C, ar.from.bond ? 3 : 6), E = toward(Q, C, 6);
+  const g = el('g', {class: 'arrow'}, L.arrows);
+  const path = el('path', {class: 'shaft', d: `M${S.x},${S.y} Q${C.x},${C.y} ${E.x},${E.y}`}, g);
+  const ul = Math.hypot(E.x - C.x, E.y - C.y), ux = (E.x - C.x)/ul, uy = (E.y - C.y)/ul, wx = -uy, wy = ux;
+  const head = el('path', {class: 'head', d: `M${E.x + ux*2},${E.y + uy*2} L${E.x - ux*10 + wx*5.5},${E.y - uy*10 + wy*5.5} L${E.x - ux*6.5},${E.y - uy*6.5} L${E.x - ux*10 - wx*5.5},${E.y - uy*10 - wy*5.5}Z`}, g);
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = len; path.style.strokeDashoffset = len; head.style.opacity = 0;
+  const e1 = el('circle', {r: 3.3, class: 'e'}, L.elec), e2 = el('circle', {r: 3.3, class: 'e'}, L.elec);
+  e1.style.opacity = 0; e2.style.opacity = 0;
+  return {g, path, head, len, e1, e2};
+}
+function setDraw(o, t) { o.path.style.strokeDashoffset = o.len*(1 - t); o.head.style.opacity = clamp((t - .85)/.15); }
+function setElectrons(o, t, op) {
+  const a = o.path.getPointAtLength(o.len*t), b = o.path.getPointAtLength(Math.min(o.len, o.len*t + 1)), c = o.path.getPointAtLength(Math.max(0, o.len*t - 1));
+  let tx = b.x - c.x, ty = b.y - c.y; const l = Math.hypot(tx, ty) || 1; tx /= l; ty /= l;
+  o.e1.setAttribute('cx', a.x - ty*3.4); o.e1.setAttribute('cy', a.y + tx*3.4);
+  o.e2.setAttribute('cx', a.x + ty*3.4); o.e2.setAttribute('cy', a.y - tx*3.4);
+  o.e1.style.opacity = op; o.e2.style.opacity = op;
+}
+function drawArrows(objs, id) {
+  const n = objs.length, each = T(650), stag = T(380), total = each + stag*(n - 1);
+  return animate(total, t => {
+    const ms = t*total;
+    objs.forEach((o, i) => { const lt = clamp((ms - i*stag)/each); setDraw(o, lt); markStep(i, lt > 0 && lt < 1); });
+  }, id);
+}
+async function electronsAndMorph(objs, fa, fb, id) {
+  const travel = T(950), mStart = T(700), mDur = T(750), total = mStart + mDur;
+  const ok = await animate(total, t => {
+    const ms = t*total, te = clamp(ms/travel), op = 1 - clamp((ms - travel)/T(300));
+    objs.forEach(o => setElectrons(o, ease(te), op));
+    applyState(fa, fb, clamp((ms - mStart)/mDur));
+  }, id);
+  if (!ok) return false;
+  applyState(fb, fb, 0);
+  return animate(T(350), t => objs.forEach(o => { o.g.style.opacity = 1 - t; }), id);
+}
+
+/* ---------- watch mode ---------- */
+const nextIdx = () => (formIdx + 1) % P.forms.length;
+async function push() {
+  if (busy || mode !== 'watch') return;
+  if (hybrid) await setHybrid(false);
+  busy = true; updateUI();
+  const id = ++runId, fa = P.forms[formIdx], nb = nextIdx(), fb = P.forms[nb];
+  L.arrows.innerHTML = ''; L.elec.innerHTML = ''; $('#result').textContent = '';
+  const objs = P.steps[formIdx].map(a => makeArrow(a, fa, fb));
+  if (!await drawArrows(objs, id)) return;
+  if (!await electronsAndMorph(objs, fa, fb, id)) return;
+  L.arrows.innerHTML = ''; L.elec.innerHTML = '';
+  formIdx = nb; busy = false;
+  updateUI();
+  $('#result').textContent = resultText(fb);
+}
+async function jumpTo(i) {
+  if (busy) return;
+  if (hybrid) await setHybrid(false);
+  if (i === formIdx) { resetTry(); updateUI(); return; }
+  busy = true; const id = ++runId;
+  L.arrows.innerHTML = ''; L.elec.innerHTML = ''; $('#result').textContent = '';
+  await animate(T(350), t => applyState(P.forms[formIdx], P.forms[i], t), id);
+  formIdx = i; busy = false; resetTry(); applyState(P.forms[i], P.forms[i], 0); updateUI();
+}
+async function setHybrid(on) {
+  if (busy && on) return;
+  hybrid = on; svg.classList.add('fade');
+  await new Promise(r => setTimeout(r, reduce ? 0 : 180));
+  L.arrows.innerHTML = ''; L.elec.innerHTML = '';
+  if (on) drawHybrid(); else { applyState(P.forms[formIdx], P.forms[formIdx], 0); resetTry(); }
+  svg.classList.remove('fade');
+  updateUI();
+}
+
+/* ---------- try mode ---------- */
+function tryMsg(text, kind) { const p = $('#tryMsg'); p.textContent = text; p.className = kind || ''; }
+function resetTry() {
+  sel = null; found = []; arrowObjs = []; hintMark = null;
+  if (mode === 'try') { L.arrows.innerHTML = ''; L.elec.innerHTML = ''; tryMsg('Click the electrons that move (a lone pair or a π bond), then click where they go.'); }
+  buildHits();
+}
+function remaining() { return P.steps[formIdx].map((a, i) => ({a, i})).filter(o => !found.includes(o.i)); }
+const srcMatch = (ar, s) => (s.kind === 'bond' && ar.from.bond === s.id) || (s.kind === 'lp' && ar.from.lp === s.id);
+const tgtMatch = (ar, t) => (t.kind === 'bond' && ar.to.bond === t.id) || ((t.kind === 'atom' || t.kind === 'lp') && ar.to.atom === t.id);
+
+function buildHits() {
+  L.hits.innerHTML = '';
+  if (mode !== 'try' || hybrid) return;
+  const f = P.forms[formIdx];
+  if (sel) {
+    if (sel.kind === 'bond') { const b = P.bonds[sel.id], A = P.atoms[b.a], B = P.atoms[b.b]; el('line', {x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: 'sel-line'}, L.hits); }
+    else { const c = lpPos(sel.id, sel.ang); el('circle', {cx: c.x, cy: c.y, r: 8, class: 'sel-dot'}, L.hits); }
+  }
+  if (hintMark) el('circle', {cx: hintMark.x, cy: hintMark.y, r: 14, class: 'pulse'}, L.hits);
+  for (const k in P.bonds) {
+    const b = P.bonds[k], A = P.atoms[b.a], B = P.atoms[b.b], dx = B.x - A.x, dy = B.y - A.y, l = Math.hypot(dx, dy), s = 16/l;
+    el('line', {x1: A.x + dx*s, y1: A.y + dy*s, x2: B.x - dx*s, y2: B.y - dy*s, class: 'hit-line'}, L.hits).addEventListener('click', () => onHit({kind: 'bond', id: k}));
+  }
+  for (const id in P.atoms) {
+    const A = P.atoms[id];
+    el('circle', {cx: A.x, cy: A.y, r: A.label ? 15 : 10, class: 'hit'}, L.hits).addEventListener('click', () => onHit({kind: 'atom', id}));
+  }
+  for (const id in P.atoms) f.lpA[id].forEach(ang => {
+    const p = lpPos(id, ang);
+    el('circle', {cx: p.x, cy: p.y, r: 9, class: 'hit'}, L.hits).addEventListener('click', e => { e.stopPropagation(); onHit({kind: 'lp', id, ang}); });
+  });
+}
+
+async function onHit(h) {
+  if (mode !== 'try' || busy || hybrid) return;
+  const f = P.forms[formIdx], rem = remaining();
+  hintMark = null;
+  if (!sel) {
+    if (h.kind === 'atom') {
+      tryMsg((f.q[h.id] || 0) > 0 && !f.lp[h.id] ? 'That atom is positive and has no lone pair, so it has no electrons to give. Arrows start at electrons: a lone pair or a π bond.' : 'Arrows start at electrons, not at an atom. Click a lone pair (the dots) or a multiple bond.', 'bad');
+      buildHits(); return;
+    }
+    if (h.kind === 'bond' && f.bonds[h.id] < 2) { tryMsg('That\u2019s a single (σ) bond. σ bonds are the skeleton and stay put in resonance. Only π electrons and lone pairs move.', 'bad'); buildHits(); return; }
+    if (!rem.some(o => srcMatch(o.a, h))) {
+      tryMsg(h.kind === 'lp' ? 'Those are real electrons, but they aren\u2019t part of this step. Look for electrons right next to a π bond or an electron-poor atom.' : 'That π bond isn\u2019t the one that moves here. Which π bond sits next to the spot that needs (or has too many) electrons?', 'bad');
+      buildHits(); return;
+    }
+    sel = h; tryMsg('Good start. Now click where those two electrons go: a bond or an atom.'); buildHits(); return;
+  }
+  if (h.kind === sel.kind && h.id === sel.id) { sel = null; tryMsg('Selection cleared. Pick the electrons that move.'); buildHits(); return; }
+  const match = rem.find(o => srcMatch(o.a, sel) && tgtMatch(o.a, h));
+  if (!match) {
+    let m = 'Not there. Picture the next structure: where must those electrons land so that no C, N or O goes over eight?';
+    if (h.kind === 'bond' && f.bonds[h.id] >= 2 && !rem.some(o => o.a.to.bond === h.id)) m = 'That bond already has a π bond. Pushing more electrons into it would overload an atom.';
+    else if (h.kind !== 'bond' && (f.q[h.id] || 0) < 0) m = 'That atom is already negative. Electrons flow away from negative charge, not toward it.';
+    else if (h.kind === 'bond' && sel.kind === 'bond') m = 'Close. A π bond moves to a neighboring bond or onto a neighboring atom. Try another neighbor.';
+    tryMsg(m, 'bad'); buildHits(); return;
+  }
+  found.push(match.i); sel = null; busy = true;
+  const fb = P.forms[nextIdx()];
+  const o = makeArrow(match.a, f, fb); arrowObjs.push(o);
+  updateSteps(); buildHits();
+  const id = runId;
+  await animate(T(600), t => setDraw(o, t), id);
+  if (id !== runId) return;
+  busy = false;
+  const arrows = P.steps[formIdx];
+  if (found.length < arrows.length) {
+    const allShift = arrows.every(a => a.from.bond && a.to.bond);
+    tryMsg(allShift ? 'Yes! Now shift the other π bonds the same way.' : 'Yes! Now find the next arrow. Check: does any atom now have more than eight electrons, or fewer than it should?', 'good');
+    buildHits(); return;
+  }
+  busy = true; L.hits.innerHTML = '';
+  tryMsg('All arrows placed. Watch the electrons move\u2026', 'good');
+  const ok = await electronsAndMorph(arrowObjs, f, fb, id);
+  if (!ok) return;
+  formIdx = nextIdx(); busy = false;
+  L.arrows.innerHTML = ''; L.elec.innerHTML = '';
+  sel = null; found = []; arrowObjs = [];
+  updateUI();
+  $('#result').textContent = resultText(fb);
+  tryMsg(`Nailed it. Now take it from contributor ${P.forms[formIdx].name} to ${P.forms[nextIdx()].name}.`, 'good');
+}
+function hint() {
+  if (mode !== 'try' || busy || hybrid) return;
+  const rem = remaining(); if (!rem.length) return;
+  const f = P.forms[formIdx], fb = P.forms[nextIdx()];
+  const pick = (sel && rem.find(o => srcMatch(o.a, sel))) || rem[0];
+  const r = resolve(pick.a, f, fb);
+  if (sel && srcMatch(pick.a, sel)) { hintMark = ptOf(r.to); tryMsg('Those electrons go to the pulsing spot.'); }
+  else { sel = null; hintMark = r.from.bond ? bondMid(r.from.bond) : lpPos(r.from.lp, r.from.a); tryMsg('Start with the electrons at the pulsing circle.'); }
+  buildHits();
+}
+
+/* ---------- panels ---------- */
+function markStep(i, on) { const ch = $('#steps').children; const li = ch[Math.min(i, ch.length - 1)]; if (li && !li.classList.contains('empty')) li.classList.toggle('active', on); }
+function updateSteps() {
+  const ul = $('#steps'); ul.innerHTML = '';
+  if (hybrid) { $('#stepsSec').hidden = true; return; }
+  $('#stepsSec').hidden = false;
+  const f = P.forms[formIdx], arrows = P.steps[formIdx];
+  const add = t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); return li; };
+  if (mode === 'try') {
+    $('#stepsHead').textContent = 'Arrows you\u2019ve found';
+    if (!found.length) add(`This step needs ${arrows.length} arrow${arrows.length > 1 ? 's' : ''}.`).className = 'empty';
+    found.forEach(i => add(stepText(arrows[i], f)));
+  } else {
+    $('#stepsHead').textContent = `What the arrows do (${f.name} to ${P.forms[nextIdx()].name})`;
+    const texts = arrows.map(a => stepText(a, f));
+    if (texts.length > 1 && texts.every(t => t === texts[0])) add(`All ${texts.length} at once: ${texts[0][0].toLowerCase() + texts[0].slice(1)}`);
+    else texts.forEach(t => add(t));
+  }
+}
+function updateUI() {
+  const f = P.forms[formIdx];
+  document.querySelectorAll('.ex-btn').forEach(b => b.setAttribute('aria-current', +b.dataset.i === cur ? 'true' : 'false'));
+  $('#exName').textContent = P.name; $('#exIntro').textContent = P.intro;
+  const pills = $('#formPills'); pills.innerHTML = '';
+  P.forms.forEach((fm, i) => {
+    if (i > 0) { const s = document.createElement('span'); s.className = 'rarr'; s.textContent = '\u2194'; s.setAttribute('aria-hidden', 'true'); pills.appendChild(s); }
+    const b = document.createElement('button'); b.className = 'pill'; b.textContent = fm.name;
+    b.setAttribute('aria-label', 'Contributor ' + fm.name + ' (' + fm.tag + ')');
+    b.setAttribute('aria-pressed', !hybrid && i === formIdx ? 'true' : 'false');
+    if (fm.tag === 'minor') b.classList.add('minor');
+    b.onclick = () => jumpTo(i); pills.appendChild(b);
+  });
+  const g = document.createElement('span'); g.className = 'gap'; pills.appendChild(g);
+  const hb = document.createElement('button'); hb.className = 'pill'; hb.textContent = 'Hybrid';
+  hb.setAttribute('aria-pressed', hybrid ? 'true' : 'false'); hb.onclick = () => setHybrid(!hybrid); pills.appendChild(hb);
+  if (hybrid) {
+    $('#stageTag').textContent = 'resonance hybrid';
+    $('#formHead').textContent = 'The resonance hybrid';
+    $('#formNote').textContent = P.hybrid;
+  } else {
+    const tag = f.tag === 'equal' ? '' : ` (${f.tag})`;
+    $('#stageTag').textContent = `contributor ${f.name}${tag}`;
+    $('#formHead').textContent = `Contributor ${f.name}${tag}`;
+    $('#formNote').textContent = noteFor(f, formIdx);
+  }
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === mode ? 'true' : 'false'));
+  $('#pushBtn').hidden = mode !== 'watch';
+  $('#pushBtn').disabled = busy;
+  $('#hybridBtn').setAttribute('aria-pressed', hybrid ? 'true' : 'false');
+  $('#hybridBtn').textContent = hybrid ? 'Hide hybrid' : 'Show hybrid';
+  $('#tryBox').hidden = mode !== 'try';
+  const nx = EX[(cur + 1) % EX.length];
+  $('#nextBtn').textContent = 'Next molecule: ' + nx.n;
+  updateSteps(); buildHits();
+}
+function loadExample(i) {
+  cur = i; P = prep(EX[i]); formIdx = 0; hybrid = false;
+  build();
+  applyState(P.forms[0], P.forms[0], 0);
+  $('#result').textContent = '';
+  resetTry(); updateUI();
+  const btn = document.querySelector(`.ex-btn[data-i="${i}"]`);
+  const list = $('#exList');
+  if (btn && list) { const br = btn.getBoundingClientRect(), lr = list.getBoundingClientRect(); if (br.top < lr.top || br.bottom > lr.bottom) list.scrollTop += br.top - lr.top - lr.height/2 + br.height/2; }
+}
+
+/* ---------- nav ---------- */
+function buildNav(filter = '') {
+  const nav = $('#exList'); nav.innerHTML = '';
+  const q = filter.trim().toLowerCase();
+  let lastCat = null, count = 0;
+  EX.forEach((ex, i) => {
+    if (q && !(ex.n + ' ' + ex.b + ' ' + ex.c).toLowerCase().includes(q)) return;
+    if (ex.c !== lastCat) { const h = document.createElement('h3'); h.className = 'cat'; h.textContent = ex.c; nav.appendChild(h); lastCat = ex.c; }
+    const b = document.createElement('button'); b.className = 'ex-btn'; b.dataset.i = i;
+    b.setAttribute('aria-current', i === cur ? 'true' : 'false');
+    const n = document.createElement('span'); n.className = 'name'; n.textContent = ex.n;
+    const s = document.createElement('small'); s.textContent = ex.b;
+    b.append(n, s); b.onclick = () => loadExample(i); nav.appendChild(b); count++;
+  });
+  if (!count) { const p = document.createElement('p'); p.className = 'empty-nav'; p.textContent = 'No molecules match. Try a shorter word, like \u201Cion\u201D or \u201Cring\u201D.'; nav.appendChild(p); }
+}
+$('#search').addEventListener('input', e => buildNav(e.target.value));
+$('#countLabel').textContent = `${EX.length} molecules`;
+$('#pushBtn').onclick = push;
+$('#hybridBtn').onclick = () => setHybrid(!hybrid);
+$('#hintBtn').onclick = hint;
+$('#nextBtn').onclick = () => loadExample((cur + 1) % EX.length);
+$('#randBtn').onclick = () => { let i; do { i = Math.floor(Math.random()*EX.length); } while (i === cur); loadExample(i); };
+$('#speedSel').onchange = e => speed = +e.target.value;
+document.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
+  if (b.dataset.mode === mode) return;
+  mode = b.dataset.mode; runId++; busy = false; hybrid = false;
+  applyState(P.forms[formIdx], P.forms[formIdx], 0);
+  L.arrows.innerHTML = ''; L.elec.innerHTML = ''; $('#result').textContent = '';
+  resetTry(); updateUI();
+});
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,select,textarea')) return;
+  if (e.key === 'ArrowRight' && mode === 'watch') { e.preventDefault(); push(); }
+});
+buildNav();
+loadExample(0);
+const loadErr = document.getElementById('loadError'); if (loadErr) loadErr.remove();
+
+</script>
+</body>
+</html>

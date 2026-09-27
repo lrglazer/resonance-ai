@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pushing electrons: resonance, animated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="loadError" style="max-width:640px;margin:40px auto;padding:20px 24px;border:2px solid #C5352B;border-radius:12px;background:#fff;color:#1B2740;font-family:system-ui,sans-serif;line-height:1.5">
+  <strong>The app files didn’t load.</strong>
+  <p style="margin:8px 0 0">This page needs the <code>css</code> and <code>js</code> folders sitting next to it. Unzip the whole <code>pushing-electrons</code> folder first (don’t open it from inside the zip), then open <code>index.html</code> from that folder. Or open <code>standalone.html</code>, which works on its own.</p>
+</div>
+<div class="wrap">
+  <header>
+    <h1>Pushing electrons</h1>
+    <p>Watch resonance happen one curved arrow at a time, then try drawing the arrows yourself.</p>
+  </header>
+  <div class="app">
+    <nav class="examples" aria-label="Molecules">
+      <div class="nav-top">
+        <input id="search" type="search" placeholder="Search molecules" aria-label="Search molecules">
+        <button id="randBtn">Random</button>
+      </div>
+      <span id="countLabel"></span>
+      <div id="exList"></div>
+    </nav>
+    <main>
+      <div class="stage">
+        <div class="stage-tag" id="stageTag"></div>
+        <svg id="mol" viewBox="0 0 600 320" role="img" aria-label="Molecule with resonance arrows"></svg>
+        <div class="forms" id="formPills"></div>
+      </div>
+      <div class="controls">
+        <div class="seg" role="group" aria-label="Mode">
+          <button data-mode="watch" aria-pressed="true">Watch</button>
+          <button data-mode="try" aria-pressed="false">Try it</button>
+        </div>
+        <button class="btn primary" id="pushBtn">Push electrons</button>
+        <button class="btn" id="hybridBtn" aria-pressed="false">Show hybrid</button>
+        <label class="speed">Speed
+          <select id="speedSel"><option value="1.8">Slow</option><option value="1" selected>Normal</option><option value="0.6">Fast</option></select>
+        </label>
+      </div>
+      <div class="try" id="tryBox" hidden>
+        <p id="tryMsg"></p>
+        <button class="btn" id="hintBtn">Show me where to start</button>
+      </div>
+    </main>
+    <aside class="notes">
+      <h2 id="exName"></h2>
+      <p id="exIntro"></p>
+      <h3 id="formHead"></h3>
+      <p id="formNote"></p>
+      <div id="stepsSec">
+        <h3 id="stepsHead">What the arrows do</h3>
+        <ul id="steps"></ul>
+        <p class="result" id="result"></p>
+      </div>
+      <button class="btn" id="nextBtn">Next molecule</button>
+      <details>
+        <summary>Rules for pushing electrons</summary>
+        <ul>
+          <li>Atoms never move. Only electrons do: lone pairs and π bonds.</li>
+          <li>Single (σ) bonds stay put. They're the skeleton.</li>
+          <li>An arrow starts at electrons and points to where they end up, either a new bond or a new lone pair.</li>
+          <li>C, N and O can't go past eight electrons. If one arrow adds electrons to an atom, another arrow usually has to take some away.</li>
+          <li>Total charge never changes. It only moves.</li>
+          <li>No single structure is the real molecule. The real thing is the hybrid, a blend of all the contributors.</li>
+          <li>The best contributors have full octets, the fewest charges, and any negative charge on the more electronegative atom.</li>
+        </ul>
+      </details>
+    </aside>
+  </div>
+</div>
+<script src="js/engine.js"></script>
+<script src="js/molecules.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
