@@ -1,10 +1,16 @@
-# Pushing electrons
+## Pushing electrons
 
 An interactive, animated guide to resonance in organic chemistry.
 
 Watch curved arrows draw themselves and electrons move between resonance contributors. Then switch to **Try it** mode and draw the arrows yourself.
 
 **[Open the app](https://lrglazer.github.io/resonance-ai/)**
+
+## How it was made
+
+I made this to help students learn resonance in organic chemistry. I came up with the idea, decided which features and molecules to include, and tested and refined the app as it came together. I also set up the repository and deployed it with GitHub Pages, including troubleshooting the deployment until it worked.
+
+The code was developed with AI assistance from [Claude](https://claude.ai).
 
 ## Features
 
