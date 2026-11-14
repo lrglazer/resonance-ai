@@ -1,4 +1,4 @@
-/* ChemFluent — more chapters from the UT Dallas syllabi: Gen Chem I & II, Organic I & II, Biochemistry I. */
+/* ChemFluent — more chapters: Gen Chem I & II, Organic I & II, Biochemistry I. */
 'use strict';
 const pick = R.pick, bank = (arr) => () => { const [q, a, w, why] = pick(arr); return mcFrom(q, a, w, Array.isArray(why) ? why : [why]); };
 const h_ = 6.626e-34, c_ = 2.998e8;

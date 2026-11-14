@@ -1,12 +1,12 @@
 /* ChemFluent — Virtual Labs: engine, shared instruments, and the General Chemistry I & II labs.
-   Experiments follow the lab schedules in past UT Dallas CHEM 1111 / 1112 / 2123 / 2125 syllabi. */
+   Experiments follow typical general and organic chemistry lab schedules. */
 'use strict';
 const LABS = [];
 const LCOURSES = [
-  { id: '1111', code: 'CHEM 1111', name: 'Gen Chem I Lab', color: '#FF8A6B' },
-  { id: '1112', code: 'CHEM 1112', name: 'Gen Chem II Lab', color: '#7FA2FF' },
-  { id: '2123', code: 'CHEM 2123', name: 'Organic Lab I', color: '#FFC93C' },
-  { id: '2125', code: 'CHEM 2125', name: 'Organic Lab II', color: '#3ED1AC' },
+  { id: '1111', code: 'GEN CHEM 1 LAB', utd: 'CHEM 1111', name: 'Gen Chem I Lab', color: '#FF8A6B' },
+  { id: '1112', code: 'GEN CHEM 2 LAB', utd: 'CHEM 1112', name: 'Gen Chem II Lab', color: '#7FA2FF' },
+  { id: '2123', code: 'ORGO 1 LAB', utd: 'CHEM 2123', name: 'Organic Lab I', color: '#FFC93C' },
+  { id: '2125', code: 'ORGO 2 LAB', utd: 'CHEM 2125', name: 'Organic Lab II', color: '#3ED1AC' },
   { id: 'bio', code: 'BIOCHEM', name: 'Biochem techniques', color: '#C29BFF' },
 ];
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));

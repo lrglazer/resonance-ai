@@ -357,3 +357,6 @@ svg.lplot{width:100%;max-width:520px;display:block}.lplot .pbg{fill:var(--panel)
 .gel{height:270px}.gel .gelbg{fill:#eef1f7;stroke:var(--ink);stroke-width:2.5}.gel .wellg{fill:#cfd6e6}.gel .band{fill:#1b2a8f;transition:opacity .6s}.gel .dye{stroke:#3d6bff;stroke-width:2;opacity:.6}
 .synstep h3,.synres h3{font:800 19px Unbounded,sans-serif;margin:6px 0 12px}.flags{color:var(--c1);font-weight:700}
 @media (max-width:760px){.rig{grid-template-columns:1fr}.bwrap svg{height:240px}}
+
+.sitefoot{padding:18px clamp(16px,4vw,48px) 28px;border-top:1px solid var(--line, #ccc);font-size:13px;opacity:.75;margin-left:var(--footml,0)}.sitefoot p{margin:4px 0}.sitefoot summary{cursor:pointer}
+@media (min-width:901px){.sitefoot{max-width:1150px;margin:0 auto;padding-left:290px}}

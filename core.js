@@ -4,13 +4,13 @@ const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAl
 const main = $('#main');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-/* ---------- courses (from UT Dallas syllabi) ---------- */
+/* ---------- courses ---------- */
 const COURSES = [
-  { id: '1311', name: 'General Chemistry I', code: 'CHEM 1311', book: 'Burdge & Overby, Chemistry: Atoms First', color: '#FF8A6B' },
-  { id: '1312', name: 'General Chemistry II', code: 'CHEM 1312', book: 'Burdge & Overby, Chemistry: Atoms First', color: '#7FA2FF' },
-  { id: '2323', name: 'Organic Chemistry I', code: 'CHEM 2323', book: 'Wade, Organic Chemistry · Klein, Organic Chemistry I as a Second Language', color: '#FFC93C' },
-  { id: '2325', name: 'Organic Chemistry II', code: 'CHEM 2325', book: 'Wade, Organic Chemistry · Klein, Organic Chemistry II as a Second Language', color: '#3ED1AC' },
-  { id: '3361', name: 'Biochemistry I', code: 'BIOL/CHEM 3361', book: 'Lehninger, Principles of Biochemistry', color: '#C29BFF' },
+  { id: '1311', name: 'General Chemistry I', code: 'GEN CHEM 1', utd: 'CHEM 1311', book: 'Burdge & Overby, Chemistry: Atoms First', color: '#FF8A6B' },
+  { id: '1312', name: 'General Chemistry II', code: 'GEN CHEM 2', utd: 'CHEM 1312', book: 'Burdge & Overby, Chemistry: Atoms First', color: '#7FA2FF' },
+  { id: '2323', name: 'Organic Chemistry I', code: 'ORGO 1', utd: 'CHEM 2323', book: 'Wade, Organic Chemistry · Klein, Organic Chemistry I as a Second Language', color: '#FFC93C' },
+  { id: '2325', name: 'Organic Chemistry II', code: 'ORGO 2', utd: 'CHEM 2325', book: 'Wade, Organic Chemistry · Klein, Organic Chemistry II as a Second Language', color: '#3ED1AC' },
+  { id: '3361', name: 'Biochemistry I', code: 'BIOCHEM', utd: 'BIOL/CHEM 3361', book: 'Lehninger, Principles of Biochemistry', color: '#C29BFF' },
 ];
 const COURSE_OF = { econfig: '1311', formal: '1311', vsepr: '1311', moles: '1311', balance: '1311', stoich: '1311', gas: '1311', ph: '1312', bondline: '2323', fg: '2323', resonance: '2323', acidbase: '2323', naming: '2323', stereo: '2323', subelim: '2323', reactions: '2323', spectro: '2325' };
 CH.forEach(c => { c.course = c.course || COURSE_OF[c.id] || (c.unit === 'gen' ? '1311' : '2323'); });
@@ -95,7 +95,7 @@ function viewHome() {
     <div class="hero-txt">
       <div class="kick">Chemistry as a second language</div>
       <h1>Learn it. Watch it.<br><span>Do it</span> until it's automatic.</h1>
-      <p>Every chapter teaches one skill the way a great textbook does, shows a worked example step by step, then gives you endless fresh problems until it clicks. Built around UT Dallas Gen Chem I &amp; II, Organic I &amp; II and Biochemistry.</p>
+      <p>Every chapter teaches one skill the way a great textbook does, shows a worked example step by step, then gives you endless fresh problems until it clicks. Covers general chemistry, organic chemistry and biochemistry.</p>
       <div class="cta"><a class="btn pri" href="#/ch/${next.id}">${S.xp ? 'Continue' : 'Start'}: ${next.title} →</a><a class="btn" href="#/exam">Take a practice exam</a><a class="btn" href="#/labs">🥽 Virtual labs</a></div>
     </div>
     <div class="hero-art" aria-hidden="true">${heroArt()}</div>
@@ -238,7 +238,7 @@ const EXAMS = {
 };
 function viewExam(sel) {
   if (!sel) {
-    main.innerHTML = `<header class="chhead"><h1>📝 Exam simulator</h1><p>Timed, no hints, graded at the end, just like the real thing. Pick an exam modeled on the UT Dallas syllabus.</p></header>
+    main.innerHTML = `<header class="chhead"><h1>📝 Exam simulator</h1><p>Timed, no hints, graded at the end, just like the real thing. Pick an exam modeled on a typical course syllabus.</p></header>
     ${COURSES.map(co => EXAMS[co.id] ? `<section class="course" style="--cc:${co.color}"><div class="course-h"><div><span class="code">${co.code}</span><h2>${co.name}</h2></div></div><div class="cgrid">${EXAMS[co.id].map(([nm, chs], i) => { const list = (chs || CH.filter(c => c.course === co.id).map(c => c.id)).map(chById).filter(Boolean);
       return `<a class="ccard" style="--cc:${co.color}" href="#/exam/${co.id}-${i}"><span class="em">⏱️</span><b>${nm}</b><small>${list.map(c => c.title).join(' · ')}</small><span class="m"><i>${chs ? 12 : 20} questions · ${chs ? 30 : 50} min</i></span></a>`; }).join('')}</div></section>` : '').join('')}
     <section class="course"><div class="cgrid"><a class="ccard" href="#/exam/all-0" style="--cc:#fff"><span class="em">🧠</span><b>Everything mix</b><small>Random questions from every chapter</small><span class="m"><i>20 questions · 50 min</i></span></a></div></section>
