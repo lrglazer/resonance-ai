@@ -55,6 +55,7 @@ function renderNav() {
   let h = `<a href="#/" class="nl ${cur === '#/' || cur === '' ? 'on' : ''}"><span class="ni">🏠</span>Home</a>
     <a href="#/exam" class="nl ${cur.startsWith('#/exam') ? 'on' : ''}"><span class="ni">📝</span>Exam simulator</a>
     <a href="#/review" class="nl ${cur.startsWith('#/review') ? 'on' : ''}"><span class="ni">🔁</span>Mistake review${S.miss.length ? `<b class="badge">${Math.min(S.miss.length, 99)}</b>` : ''}</a>
+    <a href="#/labs" class="nl ${cur.startsWith('#/lab') ? 'on' : ''}"><span class="ni">🥽</span>Virtual labs</a>
     <a href="#/cards" class="nl ${cur.startsWith('#/cards') ? 'on' : ''}"><span class="ni">🃏</span>Reaction flashcards</a>
     <a href="#/tools" class="nl ${cur.startsWith('#/tools') ? 'on' : ''}"><span class="ni">🧰</span>Toolbox</a>`;
   for (const co of COURSES) {
@@ -77,6 +78,8 @@ function route() {
   else if (parts[0] === 'review') viewReview();
   else if (parts[0] === 'cards') viewCards();
   else if (parts[0] === 'tools') viewTools(parts[1]);
+  else if (parts[0] === 'labs') viewLabs();
+  else if (parts[0] === 'lab') viewLab(parts[1], parts[2] || 'pre');
   else viewHome();
   renderNav(); renderTop();
   main.focus({ preventScroll: true });
@@ -93,7 +96,7 @@ function viewHome() {
       <div class="kick">Chemistry as a second language</div>
       <h1>Learn it. Watch it.<br><span>Do it</span> until it's automatic.</h1>
       <p>Every chapter teaches one skill the way a great textbook does, shows a worked example step by step, then gives you endless fresh problems until it clicks. Built around UT Dallas Gen Chem I &amp; II, Organic I &amp; II and Biochemistry.</p>
-      <div class="cta"><a class="btn pri" href="#/ch/${next.id}">${S.xp ? 'Continue' : 'Start'}: ${next.title} →</a><a class="btn" href="#/exam">Take a practice exam</a></div>
+      <div class="cta"><a class="btn pri" href="#/ch/${next.id}">${S.xp ? 'Continue' : 'Start'}: ${next.title} →</a><a class="btn" href="#/exam">Take a practice exam</a><a class="btn" href="#/labs">🥽 Virtual labs</a></div>
     </div>
     <div class="hero-art" aria-hidden="true">${heroArt()}</div>
   </section>
@@ -129,6 +132,7 @@ function viewChapter(c, tab) {
 function learnView(c, body, st) {
   let i = 0;
   const draw = () => {
+    if (cleanup) { cleanup(); cleanup = null; }
     const L = c.learn[i];
     body.innerHTML = `<article class="page" aria-live="polite"><div class="pg">Lesson ${i + 1} of ${c.learn.length}</div><h2>${L.h}</h2>${L.body}
       ${c.viewer && i === 0 ? `<div class="viewer"><canvas id="v3d"></canvas><div class="vctl">${[[2, 0, 'Linear'], [3, 0, 'Trig. planar'], [3, 1, 'Bent'], [4, 0, 'Tetrahedral'], [4, 1, 'Pyramidal'], [4, 2, 'Bent (sp³)'], [5, 0, 'Trig. bipyramidal'], [5, 1, 'Seesaw'], [5, 2, 'T-shaped'], [6, 0, 'Octahedral'], [6, 1, 'Sq. pyramidal'], [6, 2, 'Sq. planar']].map(([s, l, n], k) => `<button class="chip ${k === 3 ? 'on' : ''}" data-s="${s}" data-l="${l}">${n}</button>`).join('')}</div><p class="tip">Drag to rotate. Blue lobes are lone pairs.</p></div>` : ''}
@@ -138,11 +142,12 @@ function learnView(c, body, st) {
     $('#prev').onclick = () => { i--; draw(); };
     const n = $('#next'); if (n) n.onclick = () => { i++; draw(); };
     if (i === c.learn.length - 1 && !st.learned) { st.learned = true; save(); }
+    if (L.widget) { const box = document.createElement('div'); box.className = 'widget'; body.querySelector('.pnav').before(box); const stopW = L.widget(box); const prev = cleanup; cleanup = () => { stopW && stopW(); prev && prev(); }; }
     if (c.viewer && i === 0) {
       let stop = vseprViewer($('#v3d'), 4, 0, { center: 'C' });
       cleanup = () => stop();
       $$('.vctl .chip').forEach(b => b.onclick = () => { $$('.vctl .chip').forEach(x => x.classList.toggle('on', x === b)); stop(); stop = vseprViewer($('#v3d'), +b.dataset.s, +b.dataset.l, { center: 'A' }); cleanup = () => stop(); });
-    } else if (cleanup) { cleanup(); cleanup = null; }
+    }
   };
   draw();
 }
