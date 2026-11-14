@@ -1,3 +1,19 @@
+## ChemFluent: chemistry as a second language
+
+**[Open the app](https://lrglazer.github.io/resonance-ai/)**
+
+An interactive study app for General Chemistry I and II, Organic Chemistry I and II, and Biochemistry, built around the UT Dallas syllabi (CHEM 1311, 1312, 2323, 2325 and BIOL/CHEM 3361). Every chapter works like *Organic Chemistry as a Second Language*: **Learn** one skill, **Watch** a worked example step by step, then **Do** endless freshly generated problems until it's automatic.
+
+- 42 chapters with built-in problem generators (structures, names, R/S, rate laws, pH, Ksp, cell potentials, Michaelis–Menten and more)
+- Exam simulator modeled on the UTD exam breakdowns, with a weak-spot report
+- Mistake review, reaction flashcards with spaced repetition, XP, streaks and mastery tracking
+- Interactive 3D VSEPR viewer, periodic table, molar mass calculator and pKa table
+- The animated **Pushing electrons** resonance lab (`resonance.html`)
+
+Everything runs in the browser. Progress is saved on your device. No account needed.
+
+---
+
 ## Pushing electrons
 
 An interactive, animated guide to resonance in organic chemistry.
