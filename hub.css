@@ -360,3 +360,58 @@ svg.lplot{width:100%;max-width:520px;display:block}.lplot .pbg{fill:var(--panel)
 
 .sitefoot{padding:18px clamp(16px,4vw,48px) 28px;border-top:1px solid var(--line, #ccc);font-size:13px;opacity:.75;margin-left:var(--footml,0)}.sitefoot p{margin:4px 0}.sitefoot summary{cursor:pointer}
 @media (min-width:901px){.sitefoot{max-width:1150px;margin:0 auto;padding-left:290px}}
+
+/* ---------- organic illustrations (smiles.js / orgviz.js) ---------- */
+.ovz{margin:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}
+.ovz figcaption{font-size:.92rem;color:var(--muted);text-align:center;max-width:60ch;line-height:1.45}
+.ovz figcaption b{color:var(--ink)}
+.rxn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;width:100%}
+.rxm{display:inline-flex;flex-direction:column;align-items:center;gap:2px;animation:rxIn .45s cubic-bezier(.2,1.3,.4,1) both}
+.rxm:nth-child(3){animation-delay:.12s}.rxm:nth-child(5){animation-delay:.24s}.rxm:nth-child(7){animation-delay:.36s}
+.rxm small{font:700 .74rem "Atkinson Hyperlegible",sans-serif;color:var(--muted);text-align:center;max-width:16ch}
+.rxn svg.mol,.ogi svg.mol{width:auto;max-width:210px;max-height:150px;height:auto}
+.vis .rxn svg.mol{max-width:210px}
+.rxplus{font:800 1.4rem Unbounded,sans-serif;color:var(--ink)}
+.rxres{font:800 1.6rem Unbounded,sans-serif;color:var(--c2);padding:0 4px}
+.rxarrow{display:inline-flex;flex-direction:column;align-items:center;min-width:120px}
+.rxarrow svg line{stroke:var(--ink);stroke-width:2.4}.rxarrow svg polygon{fill:var(--ink)}
+.rxarrow svg{animation:rxArr .6s ease both .15s;transform-origin:left center}
+.rxc,.rxc2{font:700 .8rem "Atkinson Hyperlegible",sans-serif;color:var(--ink);text-align:center;max-width:22ch;line-height:1.25;min-height:1em}
+.rxc2{color:var(--muted)}
+.rxq{display:inline-grid;place-items:center;min-width:64px;height:64px;border:var(--bw) dashed var(--c1);border-radius:14px;font:800 1.6rem Unbounded,sans-serif;color:var(--c1);animation:rxPulse 1.6s ease-in-out infinite}
+.rxq.sm{min-width:38px;height:30px;font-size:1rem;border-radius:9px}
+.rxt{font:800 1rem "Atkinson Hyperlegible",sans-serif;color:var(--ink);padding:4px 10px;border:2px solid var(--ink);border-radius:10px;background:var(--paper)}
+.rxc .rxt,.rxc2 .rxt{border:0;padding:0;background:none;font-size:.8rem}
+.smierr{font:600 .8rem monospace;color:var(--c1)}
+.ogal{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px}
+.ogi{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border:2px solid color-mix(in srgb,var(--ink) 25%,transparent);border-radius:14px;background:var(--paper);animation:rxIn .45s cubic-bezier(.2,1.3,.4,1) both}
+.ogi b{font:700 .78rem "Atkinson Hyperlegible",sans-serif;text-align:center;max-width:22ch}
+.ogi svg.newman{max-width:170px}
+.ochain{display:grid;gap:6px;width:100%}.ochain>div{display:grid;grid-template-columns:110px 1fr;align-items:center}.ochain>div>b{font:800 .8rem Unbounded,sans-serif}
+svg.fish{max-width:260px}svg.fish line{stroke:var(--ink);stroke-width:3}svg.fish .fha{fill:none;stroke:var(--c1);stroke-width:2.5;stroke-dasharray:200;stroke-dashoffset:200;animation:drawArw 1s ease forwards .2s}svg.fish marker path{fill:var(--c1)}
+svg.spec.ruler{max-width:520px}svg.spec .zone{fill:var(--c3);opacity:.55;animation:rxIn .5s ease both}
+svg.spec.mult{max-width:300px}svg.spec.ms{max-width:360px}
+svg.chair{max-width:230px}svg.chair line{stroke:var(--ink);stroke-width:3;stroke-linecap:round}svg.chair line.hb{stroke-width:1.6;opacity:.45}svg.chair line.me{stroke:var(--c1)}svg.chair .meb{fill:var(--c3);stroke:var(--ink);stroke-width:2}
+@keyframes rxIn{from{opacity:0;transform:translateY(8px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes rxArr{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes rxPulse{50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.rxm,.ogi,.rxarrow svg,.rxq,svg.fish .fha{animation:none!important;stroke-dashoffset:0}}
+
+/* ---------- 3D orbital viewer (orb3d.js) ---------- */
+.orbbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.orbwrap{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(220px,1fr);gap:14px;align-items:start}
+@media (max-width:760px){.orbwrap{grid-template-columns:1fr}}
+.orbc{width:100%;height:auto;aspect-ratio:640/380;background:#1D1B3A;border:var(--bw) solid var(--ink);border-radius:16px;touch-action:none;cursor:grab}
+.orbc:active{cursor:grabbing}
+.orbside{display:flex;flex-direction:column;gap:8px;font-size:.92rem}
+.orbside label{display:flex;gap:8px;align-items:center;font-weight:700}
+.orbside input[type=range]{width:100%}
+.orbinfo{padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:var(--paper2);line-height:1.45}
+.orbbar2{font:700 .82rem "Atkinson Hyperlegible",sans-serif}
+.ovbar{height:12px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;background:var(--paper)}.ovbar i{display:block;height:100%;background:var(--c4);transition:width .2s}
+.orbbtns{display:flex;flex-wrap:wrap;gap:6px}
+svg.twist{max-width:240px}svg.twist .pf{fill:var(--c1);opacity:.75;stroke:var(--ink);stroke-width:2}svg.twist .pb{fill:var(--c2);opacity:.6;stroke:var(--ink);stroke-width:2}svg.twist .b{opacity:.35}svg.twist .ctr{fill:var(--ink)}
+.ovz>svg.mol{max-height:230px}
+.ogi svg.newman{width:150px;max-width:150px}.ovz svg.mol .hl{fill-opacity:.6}
+.vis .ovz>svg.mol{width:auto;max-width:100%;min-width:230px;max-height:240px}
+#oTw label{display:block}#oTw label input{display:block;width:100%;margin-top:4px}
