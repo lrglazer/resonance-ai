@@ -212,6 +212,18 @@ CH.push({ id: 'conform', course: '2323', emoji: '🪑', title: 'Conformations & 
     ['cis-1,3-dimethylcyclohexane: most stable chair?', 'Both methyls equatorial', ['Both axial', 'One axial, one equatorial', 'Neither, it is planar'], 'Cis-1,3 groups are both up; one chair puts both equatorial.'],
     ['Which cycloalkane has the most ring strain per CH₂?', 'Cyclopropane', ['Cyclohexane', 'Cyclopentane', 'Cycloheptane'], '60° bond angles in cyclopropane are far from 109.5°.'],
     ['Torsional strain comes from…', 'eclipsing bonds on adjacent carbons', ['bond angles away from 109.5°', 'atoms bumping across a ring', 'hydrogen bonding'], 'Eclipsed bonds repel each other: torsional strain.'],
+  
+    ['In a Newman projection of ethane, eclipsed vs staggered differ by about…', '12 kJ/mol (3 × 4 kJ/mol H/H eclipsing)', ['50 kJ/mol', '0 kJ/mol', '1 kJ/mol'], 'Each eclipsing H/H interaction costs about 4 kJ/mol.'],
+    ['Gauche butane is less stable than anti by about…', '3.8 kJ/mol', ['19 kJ/mol', '0 kJ/mol', '12 kJ/mol'], 'One gauche CH₃/CH₃ interaction costs about 3.8 kJ/mol.'],
+    ['The highest-energy conformation of butane is…', 'totally eclipsed (CH₃ eclipsing CH₃, 0°)', ['anti', 'gauche', 'staggered'], 'CH₃/CH₃ eclipsing adds steric strain on top of torsional strain (~19 kJ/mol).'],
+    ['Each axial methyl in cyclohexane costs about…', '7.6 kJ/mol (two 1,3-diaxial interactions)', ['0.5 kJ/mol', '30 kJ/mol', '4 kJ/mol per H'], 'Each CH₃/H 1,3-diaxial interaction ≈ 3.8 kJ/mol, and there are two.'],
+    ['Which group has the strongest equatorial preference?', 'tert-butyl', ['methyl', 'ethyl', 'hydroxyl'], 'A t-Bu group is so bulky it essentially locks the ring with t-Bu equatorial.'],
+    ['cis-1,2-dimethylcyclohexane: what are the two chair forms like?', 'Both have one axial and one equatorial methyl (equal energy)', ['One is diequatorial, one diaxial', 'Both are diequatorial', 'Both are diaxial'], 'Cis-1,2 is always one up-axial and one up-equatorial; flipping just swaps them.'],
+    ['trans-1,4-dimethylcyclohexane: most stable chair?', 'Both methyls equatorial', ['Both axial', 'One axial, one equatorial', 'Twist-boat'], 'Trans-1,4 can be diequatorial.'],
+    ['Cyclohexane\'s boat conformation is higher in energy mainly because of…', 'flagpole interactions and eclipsing bonds', ['angle strain', 'hydrogen bonding', 'resonance'], 'Boat has eclipsed C–C bonds and the flagpole H/H clash.'],
+    ['Angle strain is caused by…', 'bond angles forced away from 109.5°', ['eclipsed bonds', 'bulky groups near each other', 'lone pair repulsion only'], 'This is Baeyer strain; small rings have the most.'],
+    ['How many axial positions are on a cyclohexane chair?', '6 (3 up, 3 down, alternating)', ['12', '3', '2'], 'One axial and one equatorial position on each of the 6 carbons.'],
+    ['In a Newman projection, the front carbon is drawn as…', 'a point where three bonds meet', ['a large circle', 'a wedge', 'a dashed line'], 'The back carbon is the circle; its bonds come out from behind it.'],
   ]) });
 
 CH.push({ id: 'radical', course: '2323', emoji: '☀️', title: 'Radical halogenation', blurb: 'Initiation, propagation, termination, and why bromination is picky.',
@@ -227,6 +239,15 @@ CH.push({ id: 'radical', course: '2323', emoji: '☀️', title: 'Radical haloge
     ['Two radicals combining is called…', 'Termination', ['Initiation', 'Propagation', 'Hydrogen abstraction'], 'Termination removes radicals from the chain.'],
     ['NBS with light brominates which position?', 'Allylic or benzylic', ['Vinylic', 'Any 1° carbon', 'The carbonyl carbon'], 'NBS keeps [Br₂] low, so allylic radical substitution beats addition.'],
     ['Radical halogenation of a stereocenter-forming carbon gives…', 'a racemic mixture', ['only R', 'only S', 'a meso compound'], 'The carbon radical is planar, so X can add from either face.'],
+  
+    ['Which bond breaks in the initiation step of Cl₂ chlorination?', 'Cl–Cl (homolysis)', ['C–H', 'C–Cl', 'H–Cl'], 'Light or heat splits the weak Cl–Cl bond into two Cl•.'],
+    ['Homolytic bond cleavage gives…', 'two radicals (one electron each)', ['a cation and an anion', 'two anions', 'a carbocation only'], 'Each atom takes one electron; single-barbed fishhook arrows show it.'],
+    ['Which arrow shows one electron moving?', 'A single-barbed fishhook arrow', ['A double-barbed arrow', 'A resonance arrow ↔', 'An equilibrium arrow ⇌'], 'Radical mechanisms use fishhook arrows.'],
+    ['Allylic radicals are especially stable because…', 'the unpaired electron is delocalized by resonance', ['they have no hydrogens', 'they are sp³', 'they are charged'], 'Resonance spreads the radical over two carbons.'],
+    ['Which hydrogen is easiest to abstract?', 'a benzylic or allylic C–H', ['a vinylic C–H', 'a methyl C–H', 'an aryl C–H'], 'It has the weakest bond because the radical formed is resonance-stabilized.'],
+    ['Chlorination of propane gives a mixture mainly because…', 'Cl• is reactive and not very selective', ['propane is symmetric', 'Cl₂ is a nucleophile', 'there are no 2° hydrogens'], 'Chlorination barely distinguishes 1° from 2° H (about 3.5 : 1 per H).'],
+    ['Peroxides (ROOR) are used in radical reactions as…', 'radical initiators', ['nucleophiles', 'Lewis acids', 'protecting groups'], 'The weak O–O bond homolyzes easily.'],
+    ['A propagation step…', 'consumes one radical and makes another', ['makes two radicals from none', 'destroys two radicals', 'only happens in light'], 'That is why chain reactions keep going.'],
   ]) });
 
 /* ======================= CHEM 2325 ======================= */
@@ -273,6 +294,14 @@ CH.push({ id: 'carbonyl', course: '2325', emoji: '🔺', title: 'Aldehydes, keto
     ['Nitrile + H₃O⁺, heat gives…', 'a carboxylic acid', ['an amine', 'an aldehyde', 'an alkane'], 'Hydrolysis goes nitrile → amide → acid.'],
     ['Carboxylic acid + ROH, H⁺ (heat) is called…', 'Fischer esterification', ['Saponification', 'Wittig reaction', 'Claisen condensation'], 'Acid-catalyzed equilibrium; use excess alcohol.'],
     ['Acid chloride + R₂CuLi gives…', 'a ketone', ['a tertiary alcohol', 'an ester', 'an alkane'], 'Gilman reagents add once and stop at the ketone.'],
+  
+    ['Which is more electrophilic?', 'An aldehyde', ['A ketone', 'An ester', 'An amide'], 'Aldehydes have less steric crowding and one fewer donating alkyl group.'],
+    ['Hydration of a ketone (adding water across C=O) gives…', 'a gem-diol (hydrate)', ['an epoxide', 'an ester', 'an enol'], 'Usually the equilibrium lies on the ketone side, except for formaldehyde.'],
+    ['Aldehyde + 1 ROH, acid (stopping early) gives…', 'a hemiacetal', ['an acetal', 'an ester', 'an ether'], 'One OH and one OR on the same carbon.'],
+    ['Acetals are stable to…', 'base and nucleophiles (but hydrolyze in aqueous acid)', ['aqueous acid', 'nothing', 'water only'], 'That makes them great protecting groups during Grignard reactions.'],
+    ['Wolff–Kishner (H₂NNH₂, KOH, heat) converts a ketone to…', 'a CH₂ (alkane)', ['an alcohol', 'an amine', 'an alkene'], 'It removes the C=O oxygen completely under basic conditions.'],
+    ['Acid anhydride + alcohol gives…', 'an ester + a carboxylic acid', ['an amide', 'an acid chloride', 'a ketone'], 'One acyl group goes to the alcohol; the other leaves as a carboxylate.'],
+    ['Baeyer–Villiger oxidation (RCO₃H) turns a ketone into…', 'an ester', ['an aldehyde', 'an alcohol', 'an epoxide'], 'An O is inserted next to the C=O, on the more substituted side.'],
   ]) });
 
 CH.push({ id: 'amines', course: '2325', emoji: '🐟', title: 'Amines', blurb: 'Basicity, synthesis and Hofmann elimination.',
@@ -287,6 +316,16 @@ CH.push({ id: 'amines', course: '2325', emoji: '🐟', title: 'Amines', blurb: '
     ['Hofmann elimination gives…', 'the less substituted alkene', ['the more substituted alkene', 'an alcohol', 'an amide'], 'The bulky leaving group favors removing the most accessible H.'],
     ['Best way to make a clean primary amine?', 'Gabriel synthesis', ['NH₃ + excess alkyl halide', 'Hofmann elimination', 'Fischer esterification'], 'Direct alkylation over-alkylates; Gabriel stops at 1°.'],
     ['Ketone + NH₃ + NaBH₃CN gives…', 'a primary amine (reductive amination)', ['an imine only', 'an alcohol', 'an amide'], 'The imine forms, then NaBH₃CN reduces it.'],
+  
+    ['Rank by basicity (strongest first):', 'CH₃NH₂ > NH₃ > aniline', ['aniline > NH₃ > CH₃NH₂', 'NH₃ > CH₃NH₂ > aniline', 'all are equal'], 'Alkyl groups donate electron density; aniline delocalizes its lone pair.'],
+    ['Pyridine vs pyrrole: which is the stronger base?', 'Pyridine', ['Pyrrole', 'They are equal', 'Neither is basic at all'], "Pyrrole's lone pair is part of the aromatic sextet; pyridine's is not."],
+    ['A nitro group on aniline makes it…', 'a weaker base', ['a stronger base', 'unchanged', 'an acid stronger than HCl'], 'Electron-withdrawing groups pull density from the nitrogen.'],
+    ['Amines are good nucleophiles because…', 'nitrogen has an available lone pair', ['nitrogen is very electronegative', 'they are positively charged', 'they have no hydrogens'], 'N is less electronegative than O, so its lone pair is more available.'],
+    ['Primary aryl amine + NaNO₂, HCl (0 °C) gives…', 'an aryl diazonium salt', ['a nitro compound', 'an amide', 'an imine'], 'Diazonium salts can be replaced by Cl, Br, CN, OH, F or H (Sandmeyer and related).'],
+    ['Amide + LiAlH₄ gives…', 'an amine', ['an alcohol', 'a nitrile', 'an aldehyde'], 'Amide reduction is a great way to make amines.'],
+    ['Nitrile + LiAlH₄ (then H₂O) gives…', 'a primary amine (R–CH₂NH₂)', ['a carboxylic acid', 'an aldehyde', 'a ketone'], 'C≡N is reduced all the way to CH₂–NH₂.'],
+    ['Why does NH₃ + excess CH₃I give a mixture?', 'Each alkylated amine is still nucleophilic and reacts again', ['CH₃I is not reactive', 'NH₃ is not a nucleophile', 'It gives only one product'], 'Overalkylation all the way to the quaternary ammonium salt.'],
+    ['Quaternary ammonium salts are…', 'not basic (no lone pair)', ['strong bases', 'weak acids', 'radicals'], 'R₄N⁺ has four bonds and no lone pair.'],
   ]) });
 
 CH.push({ id: 'enolates', course: '2325', emoji: '🔗', title: 'Enols & enolates', blurb: 'Alpha carbon chemistry: aldol, Claisen, Michael and friends.',
@@ -305,6 +344,16 @@ CH.push({ id: 'enolates', course: '2325', emoji: '🔗', title: 'Enols & enolate
     ['Malonic ester synthesis makes…', 'a substituted acetic acid', ['a methyl ketone', 'an amine', 'an aldehyde'], 'Alkylate, hydrolyze, then heat to decarboxylate.'],
     ['Acetoacetic ester synthesis makes…', 'a substituted methyl ketone', ['a carboxylic acid', 'an alcohol', 'an ether'], 'Alkylation then hydrolysis/decarboxylation leaves a methyl ketone.'],
     ['Which α-H is most acidic?', 'Between two C=O groups (pKa ≈ 9–11)', ['Next to a ketone C=O (≈ 19)', 'Next to an ester (≈ 25)', 'On an alkane (≈ 50)'], 'Two carbonyls share the negative charge by resonance.'],
+  
+    ['Keto–enol tautomers differ in…', 'the position of an H and a double bond', ['their molecular formula', 'their carbon skeleton', 'their stereocenters only'], 'Tautomers are constitutional isomers that rapidly interconvert.'],
+    ['For simple ketones at equilibrium, which form dominates?', 'the keto form', ['the enol form', '50:50', 'the enolate'], 'C=O is much stronger than C=C, so the keto form wins.'],
+    ['A crossed aldol works cleanly when…', 'one partner has no α-H (like benzaldehyde)', ['both have α-H', 'both are esters', 'no base is used'], 'Then only one enolate can form and only one electrophile is good.'],
+    ['A Dieckmann condensation is…', 'an intramolecular Claisen that makes a ring', ['an aldol with a ketone', 'a Michael addition', 'an ester hydrolysis'], 'A diester cyclizes to a cyclic β-keto ester (5- or 6-membered).'],
+    ['Racemization at an α-stereocenter in base happens because…', 'the planar enolate can be protonated on either face', ['the C=O breaks', 'the molecule rotates', 'a radical forms'], 'Forming the enolate destroys the stereocenter temporarily.'],
+    ['In acid, α-halogenation of a ketone usually…', 'stops after one halogen', ['adds three halogens', 'does not happen', 'cleaves the ketone'], 'In acid, the first halogen makes enol formation slower.'],
+    ['In base, α-halogenation of a methyl ketone…', 'continues to the haloform reaction', ['stops after one halogen', 'needs light', 'gives an alkene'], 'Each halogen makes the next α-H more acidic.'],
+    ['The best Michael donor is…', 'a stabilized enolate (like a malonate)', ['an alkyllithium', 'a Grignard reagent', 'LiAlH₄'], 'Soft, stabilized nucleophiles prefer 1,4-addition; hard ones add 1,2.'],
+    ['Thermodynamic enolate conditions are…', 'a weaker base, room temperature or heat (equilibrating)', ['LDA at −78 °C', 'no base', 'a radical initiator'], 'Equilibration favors the more substituted, more stable enolate.'],
   ]) });
 
 /* ======================= BIOCHEMISTRY (BIOL/CHEM 3361) ======================= */
@@ -345,6 +394,17 @@ CH.push({ id: 'proteins', course: '3361', emoji: '🌀', title: 'Protein structu
     ['An α-helix has about how many residues per turn?', '3.6', ['2.0', '5.4', '10'], '3.6 residues per turn, 5.4 Å pitch, right-handed.'],
     ['Which amino acid breaks α-helices?', 'Proline', ['Alanine', 'Leucine', 'Glutamate'], 'Proline\'s ring locks φ and has no N–H to H-bond.'],
     ['Denaturation destroys…', 'secondary, tertiary and quaternary structure, but not the sequence', ['the primary sequence', 'only disulfide bonds', 'only the N-terminus'], 'Peptide bonds survive; the fold does not.'],
+  
+    ['β-sheets are held together by H-bonds between…', 'backbone C=O and N–H of neighboring strands', ['side chains only', 'disulfides', 'water molecules only'], 'Strands can run parallel or antiparallel.'],
+    ['Which amino acid is best known for forming disulfide bridges?', 'Cysteine', ['Serine', 'Methionine', 'Glycine'], 'Its thiol (–SH) can oxidize to –S–S–.'],
+    ['Where are nonpolar side chains usually found in a water-soluble protein?', 'Buried in the core', ['On the surface', 'Only at the N-terminus', 'Randomly'], 'The hydrophobic effect drives them inward.'],
+    ['Which amino acid is most flexible in loops and turns?', 'Glycine', ['Proline', 'Tryptophan', 'Valine'], 'Glycine has only H as its side chain.'],
+    ['Peptide bonds form between…', 'the α-carboxyl of one amino acid and the α-amino of the next', ['two side chains', 'two amino groups', 'a sugar and a base'], 'A condensation reaction releases water.'],
+    ['Peptide sequences are written…', 'from the N-terminus to the C-terminus', ['C to N', 'alphabetically', 'by molecular weight'], 'Convention: free –NH₃⁺ end first.'],
+    ['Chaperone proteins…', 'help other proteins fold correctly', ['break peptide bonds', 'store oxygen', 'make DNA'], 'Many use ATP to give misfolded proteins another try.'],
+    ['Myoglobin vs hemoglobin oxygen binding curves:', 'myoglobin is hyperbolic; hemoglobin is sigmoidal (cooperative)', ['both are sigmoidal', 'both are linear', 'hemoglobin is hyperbolic'], 'Hemoglobin\'s four subunits bind O₂ cooperatively.'],
+    ['Which technique separates proteins by size?', 'Size-exclusion (gel filtration) chromatography', ['Ion-exchange chromatography', 'Affinity chromatography', 'Isoelectric focusing'], 'Big proteins come out first because they skip the bead pores.'],
+    ['SDS-PAGE separates proteins mainly by…', 'mass', ['charge', 'pI', 'shape'], 'SDS coats proteins with negative charge proportional to length.'],
   ]) });
 
 CH.push({ id: 'enzymes', course: '3361', emoji: '⚙️', title: 'Enzyme kinetics & inhibition', blurb: 'Michaelis–Menten, Lineweaver–Burk and inhibitor types.',
@@ -375,6 +435,16 @@ CH.push({ id: 'carbs', course: '3361', emoji: '🍬', title: 'Carbohydrates', bl
     ['Lactose is…', 'galactose β(1→4) glucose', ['glucose α(1→4) glucose', 'glucose α1→β2 fructose', 'galactose α(1→6) glucose'], 'Milk sugar; lactase cleaves it.'],
     ['α and β forms of glucose are called…', 'anomers', ['enantiomers', 'epimers at C4', 'structural isomers'], 'They differ only at the anomeric carbon (C1).'],
     ['D vs L is determined by the OH on…', 'the stereocenter farthest from the C=O', ['C1', 'C2', 'the anomeric carbon'], 'For glucose that is C5.'],
+  
+    ['How many stereocenters does open-chain D-glucose have?', '4', ['3', '5', '6'], 'C2, C3, C4 and C5.'],
+    ['Glucose and galactose are epimers at…', 'C4', ['C2', 'C1', 'C5'], 'They differ only in the OH configuration at C4.'],
+    ['Glucose and mannose are epimers at…', 'C2', ['C4', 'C3', 'C6'], 'They differ only at C2.'],
+    ['Mutarotation is…', 'interconversion of α and β anomers in solution', ['oxidation of glucose', 'formation of a glycosidic bond', 'conversion to fructose'], 'The ring opens and recloses through the open-chain form.'],
+    ['A reducing sugar has…', 'a free anomeric carbon (hemiacetal) that can open', ['no OH groups', 'only β bonds', 'a phosphate'], 'The open aldehyde reduces Cu²⁺ or Ag⁺.'],
+    ['Glucose in its six-membered ring form is called a…', 'pyranose', ['furanose', 'ketose', 'glycoside'], 'Six-membered ring = pyranose; five = furanose.'],
+    ['In β-D-glucopyranose (chair), all bulky groups are…', 'equatorial', ['axial', 'alternating', 'in the plane'], 'That is why β-glucose is the most abundant anomer.'],
+    ['Humans can\'t digest cellulose because…', 'we lack enzymes for β(1→4) bonds', ['it has no glucose', 'it is a protein', 'it is too small'], 'Amylases only cleave α bonds.'],
+    ['A glycosidic bond is a…', 'an acetal linkage between sugars', ['a peptide bond', 'an ester', 'a hydrogen bond'], 'The anomeric OH reacts with another alcohol.'],
   ]) });
 
 CH.push({ id: 'metabolism', course: '3361', emoji: '🔋', title: 'Metabolism & bioenergetics', blurb: 'Glycolysis, the citric acid cycle, oxidative phosphorylation and ΔG.',
@@ -397,5 +467,14 @@ CH.push({ id: 'metabolism', course: '3361', emoji: '🔋', title: 'Metabolism & 
       ['Which enzyme converts pyruvate to acetyl-CoA?', 'Pyruvate dehydrogenase', ['Pyruvate kinase', 'Pyruvate carboxylase', 'Citrate synthase'], 'PDH links glycolysis to the citric acid cycle (makes CO₂ + NADH).'],
       ['Gluconeogenesis bypasses pyruvate kinase using…', 'pyruvate carboxylase and PEPCK', ['hexokinase', 'PFK-1', 'lactate dehydrogenase'], 'Pyruvate → oxaloacetate → PEP.'],
       ['Under anaerobic conditions, muscle regenerates NAD⁺ by…', 'reducing pyruvate to lactate', ['running the citric acid cycle', 'oxidizing fatty acids', 'making ethanol'], 'Lactate dehydrogenase uses NADH to reduce pyruvate.'],
+    
+      ['Which complex of the ETC does NOT pump protons?', 'Complex II (succinate dehydrogenase)', ['Complex I', 'Complex III', 'Complex IV'], 'That is why FADH₂ from succinate makes less ATP.'],
+      ['Which enzyme is shared by the citric acid cycle and the ETC?', 'Succinate dehydrogenase', ['Citrate synthase', 'Pyruvate kinase', 'ATP synthase'], 'It is Complex II.'],
+      ['Glycogen is broken down by…', 'glycogen phosphorylase', ['glycogen synthase', 'hexokinase', 'PFK-1'], 'It releases glucose-1-phosphate.'],
+      ['Insulin generally…', 'promotes glycolysis and glycogen synthesis', ['promotes gluconeogenesis', 'promotes glycogen breakdown', 'blocks glucose uptake'], 'Insulin is the fed-state signal; glucagon is the fasting signal.'],
+      ['The pentose phosphate pathway mainly produces…', 'NADPH and ribose-5-phosphate', ['ATP and NADH', 'acetyl-CoA', 'lactate'], 'NADPH powers biosynthesis; ribose is for nucleotides.'],
+      ['Fatty acid β-oxidation produces…', 'acetyl-CoA, NADH and FADH₂', ['glucose', 'pyruvate only', 'lactate'], 'Each round removes a 2-carbon acetyl-CoA unit.'],
+      ['An uncoupler (like DNP) causes…', 'oxygen use without ATP synthesis; energy lost as heat', ['more ATP synthesis', 'no oxygen use', 'faster glycolysis only'], 'It lets protons leak back across the membrane, bypassing ATP synthase.'],
+      ['Cyanide stops respiration by blocking…', 'Complex IV (cytochrome c oxidase)', ['Complex I', 'ATP synthase', 'hexokinase'], 'Electrons cannot reach O₂.'],
     ])();
   } });

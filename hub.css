@@ -262,3 +262,32 @@ svg.stereo{max-width:340px}
 }
 @media (max-width:500px){.meta .mt:nth-child(2){display:none}.logo{font-size:16px}.tabs a{padding:8px 11px;font-size:14px}.bigtile{width:72px;height:80px}.bigtile b{font-size:30px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* mechanisms */
+.mechvis svg.mech{max-width:520px;max-height:320px}
+svg.mech .hit{fill:transparent;stroke:transparent;stroke-width:22;cursor:pointer}
+svg.mech circle.hit{stroke-width:0}
+svg.mech .hit.src:hover,svg.mech .hit.tgt:hover{fill:color-mix(in srgb,var(--c3) 45%,transparent);stroke:color-mix(in srgb,var(--c3) 45%,transparent)}
+svg.mech circle.hit.atom:hover{fill:color-mix(in srgb,var(--c2) 22%,transparent)}
+svg.mech .hit.sel{fill:color-mix(in srgb,var(--c1) 45%,transparent)!important;stroke:color-mix(in srgb,var(--c1) 45%,transparent)!important}
+svg.mech .lp{fill:var(--c2)}
+svg.mech .chg circle{fill:var(--paper2);stroke:var(--ink);stroke-width:1.6}svg.mech .chg text{font:800 13px sans-serif;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+svg.mech .arw{fill:none;stroke:var(--c1);stroke-width:3;stroke-linecap:round;stroke-dasharray:400;stroke-dashoffset:400;animation:drawArw .5s ease forwards}
+svg.mech .ahd{fill:var(--c1)}
+svg.mech .arw.right{stroke:#14A37F}svg.mech .arw.wrong{stroke:var(--neg);stroke-dasharray:6 5;animation:none;stroke-dashoffset:0}
+svg.mech .arw.good{stroke:#14A37F;stroke-width:3.5}
+@keyframes drawArw{to{stroke-dashoffset:0}}
+.atools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}.atools .acheck{margin-left:auto}.acount{font-weight:700;color:var(--muted)}
+.amsg{margin:10px 0 0;font-weight:700;color:var(--muted)}.amsg.warn{color:var(--c1)}
+/* synthesis */
+.syn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin:6px 0 14px}
+.syn span{border:var(--bw) solid var(--ink);border-radius:12px;padding:10px 14px;font-weight:800;box-shadow:3px 3px 0 var(--ink);background:var(--c4);color:#10132A}
+.syn span:last-child{background:var(--c3)}
+.syn em{font:800 22px Unbounded,sans-serif;font-style:normal;position:relative;padding:0 36px}
+.syn em::before{content:"";position:absolute;left:0;right:0;top:50%;height:3px;background:var(--ink)}.syn em::after{content:"";position:absolute;right:-2px;top:calc(50% - 7px);border:8px solid transparent;border-left:12px solid var(--ink);border-right:0}
+/* spectra */
+svg.spec{width:100%;max-width:600px;height:auto}
+svg.spec .sbg{fill:var(--paper2)}svg.spec .trace{fill:none;stroke:var(--c2);stroke-width:2.2;stroke-linejoin:round;stroke-dasharray:3000;stroke-dashoffset:3000;animation:drawArw 1.6s ease forwards}
+svg.spec .pk{stroke:var(--c1);stroke-width:2;animation:grow .7s cubic-bezier(.2,1.4,.4,1) both;transform-box:fill-box;transform-origin:bottom}
+@keyframes grow{from{transform:scaleY(0)}}
+svg.spec .axl,svg.spec .tk{stroke:var(--ink);stroke-width:1.5}svg.spec .ax{font:700 11px "Atkinson Hyperlegible",sans-serif;fill:var(--muted);text-anchor:middle}svg.spec .int{font:800 11px Unbounded,sans-serif;fill:var(--ink);text-anchor:middle}

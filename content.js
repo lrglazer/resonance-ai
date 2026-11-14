@@ -260,6 +260,14 @@ const RES_Q = [
   ['Why is the C–O bond length the same for both oxygens in acetate?', 'Resonance makes both C–O bonds a hybrid of single and double', ['One O is protonated', 'Both are double bonds', 'Both are single bonds'], 'The negative charge and π bond are shared equally, so both bonds are about 1.5 bonds.'],
   ['Which can NOT be the start of a resonance arrow?', 'A C–H σ bond', ['A lone pair on oxygen', 'A C=C π bond', 'A C=O π bond'], 'Resonance only moves π electrons and lone pairs. σ bonds stay put.'],
   ['When pushing electrons, carbon can have at most…', '8 valence electrons', ['10 valence electrons', '6 valence electrons', '12 valence electrons'], 'Second-row atoms (C, N, O) can never exceed an octet.'],
+
+  ['Which ion is more stable because of resonance?', 'Acetate (CH₃COO⁻)', ['Ethoxide (CH₃CH₂O⁻)', 'Methoxide (CH₃O⁻)', 'Hydroxide (HO⁻)'], 'Acetate spreads its negative charge over two oxygens.'],
+  ['Which contributor of an amide is minor but important?', 'C=N⁺ with O⁻ (charge-separated)', ['C≡N with O²⁻', 'One with a 5-bond carbon', 'One with no lone pairs'], 'It explains the planar amide and restricted C–N rotation.'],
+  ['How many equivalent resonance structures does the carbonate ion have?', '3', ['1', '2', '4'], 'The double bond can sit on any of the three oxygens.'],
+  ['In benzene, all six C–C bonds are…', 'equal, between single and double', ['alternating single and double', 'all double', 'all single'], 'The two Kekulé structures average out.'],
+  ['A negative charge is best placed on…', 'the more electronegative atom', ['carbon', 'the least substituted atom', 'hydrogen'], 'O⁻ is better than C⁻ in an enolate contributor.'],
+  ['An arrow from a C=C π bond toward a C⁺ in resonance…', 'moves the positive charge to the other end', ['creates a new atom', 'breaks a σ bond', 'makes a radical'], 'This is the allylic carbocation pattern.'],
+  ['Which molecule has resonance?', 'Ozone (O₃)', ['Methane', 'Ethane', 'Water'], 'O₃ has two equivalent contributors.'],
 ];
 CH.push({
   id: 'resonance', unit: 'org', emoji: '🔁', title: 'Resonance (Pushing electrons)',

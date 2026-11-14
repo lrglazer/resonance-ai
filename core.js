@@ -14,10 +14,10 @@ const COURSES = [
 ];
 const COURSE_OF = { econfig: '1311', formal: '1311', vsepr: '1311', moles: '1311', balance: '1311', stoich: '1311', gas: '1311', ph: '1312', bondline: '2323', fg: '2323', resonance: '2323', acidbase: '2323', naming: '2323', stereo: '2323', subelim: '2323', reactions: '2323', spectro: '2325' };
 CH.forEach(c => { c.course = c.course || COURSE_OF[c.id] || (c.unit === 'gen' ? '1311' : '2323'); });
-const ORDER = ['quantum', 'econfig', 'trends', 'ionic', 'formal', 'vsepr', 'imf', 'moles', 'balance', 'stoich', 'aqueous', 'thermo', 'gas', 'colligative', 'kinetics', 'equilibrium', 'ph', 'ksp', 'gibbs', 'electro', 'nuclear', 'bondline', 'fg', 'resonance', 'acidbase', 'naming', 'conform', 'stereo', 'radical', 'subelim', 'reactions', 'spectro', 'massspec', 'aromatic', 'carbonyl', 'amines', 'enolates', 'aminoacids', 'proteins', 'enzymes', 'carbs', 'metabolism'];
+const ORDER = ['quantum', 'econfig', 'trends', 'ionic', 'formal', 'vsepr', 'imf', 'moles', 'balance', 'stoich', 'aqueous', 'thermo', 'gas', 'colligative', 'kinetics', 'equilibrium', 'ph', 'ksp', 'gibbs', 'electro', 'nuclear', 'bondline', 'fg', 'resonance', 'acidbase', 'naming', 'conform', 'stereo', 'mechanisms', 'radical', 'subelim', 'reactions', 'synth1', 'spectro', 'spectra', 'massspec', 'aromatic', 'carbonyl', 'amines', 'enolates', 'synth2', 'aminoacids', 'proteins', 'enzymes', 'carbs', 'metabolism'];
 CH.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id));
 const chById = id => CH.find(c => c.id === id);
-const SYMS = { quantum: 'Qu', econfig: 'Ec', trends: 'Tr', ionic: 'Io', formal: 'Fc', vsepr: 'Vs', imf: 'Im', moles: 'Mo', balance: 'Ba', stoich: 'St', aqueous: 'Aq', thermo: 'Th', gas: 'Gs', colligative: 'Cg', kinetics: 'Ki', equilibrium: 'Eq', ph: 'Ph', ksp: 'Ks', gibbs: 'Gb', electro: 'El', nuclear: 'Nu', bondline: 'Bl', fg: 'Fg', resonance: 'Rs', acidbase: 'Ab', naming: 'Nm', conform: 'Cn', stereo: 'Sr', radical: 'Rd', subelim: 'Sn', reactions: 'Rx', spectro: 'Ir', massspec: 'Ms', aromatic: 'Ar', carbonyl: 'Cb', amines: 'Am', enolates: 'En', aminoacids: 'Aa', proteins: 'Pr', enzymes: 'Ez', carbs: 'Cs', metabolism: 'Mt' };
+const SYMS = { quantum: 'Qu', econfig: 'Ec', trends: 'Tr', ionic: 'Io', formal: 'Fc', vsepr: 'Vs', imf: 'Im', moles: 'Mo', balance: 'Ba', stoich: 'St', aqueous: 'Aq', thermo: 'Th', gas: 'Gs', colligative: 'Cg', kinetics: 'Ki', equilibrium: 'Eq', ph: 'Ph', ksp: 'Ks', gibbs: 'Gb', electro: 'El', nuclear: 'Nu', bondline: 'Bl', fg: 'Fg', resonance: 'Rs', acidbase: 'Ab', naming: 'Nm', conform: 'Cn', stereo: 'Sr', radical: 'Rd', subelim: 'Sn', reactions: 'Rx', spectro: 'Ir', massspec: 'Ms', aromatic: 'Ar', carbonyl: 'Cb', amines: 'Am', enolates: 'En', aminoacids: 'Aa', proteins: 'Pr', enzymes: 'Ez', carbs: 'Cs', metabolism: 'Mt', mechanisms: 'Mc', synth1: 'Sy', synth2: 'Sz', spectra: 'Nr' };
 const symOf = c => SYMS[c.id] || c.title.slice(0, 2);
 const zOf = c => CH.indexOf(c) + 1;
 function tile(c, co, i = 0) { const m = mastery(c.id); return `<a class="ccard ${m >= 80 ? 'mastered' : ''}" href="#/ch/${c.id}" style="--cc:${co.color};animation-delay:${i * 35}ms" aria-label="${c.title}, ${m}% mastered"><span class="zn"><span>${zOf(c)}</span><span>${c.emoji}</span></span><span class="sym">${symOf(c)}</span><b>${c.title}</b><small>${c.blurb}</small><span class="m"><span class="meter"><i style="width:${m}%"></i></span>${m >= 80 ? 'Mastered' : m ? m + '%' : 'New'}</span></a>`; }
@@ -152,6 +152,8 @@ function qHTML(q, opts = {}) {
   if (q.type === 'mc') a = `<div class="opts">${q.options.map((o, k) => `<button class="opt" data-k="${k}"><span class="key">${'ABCDEF'[k]}</span><span>${o}</span></button>`).join('')}</div>`;
   else if (q.type === 'num' || q.type === 'text') a = `<form class="ans"><input id="inp" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="${q.type === 'num' ? 'decimal' : 'text'}" placeholder="${q.placeholder || (q.type === 'num' ? 'Your answer' : 'Type your answer')}" aria-label="Your answer">${q.unit ? `<span class="unit">${q.unit}</span>` : ''}<button class="btn pri" type="submit">Check</button></form>${q.type === 'num' ? '<p class="tip">Within about 2% counts. Scientific notation works: 3.01e23.</p>' : ''}`;
   else if (q.type === 'balance') { const all = [...q.eq.L, ...q.eq.R]; a = `<form class="ans bal">${all.map((f, k) => `${k === q.eq.L.length ? '<span class="arr">→</span>' : k ? '<span>+</span>' : ''}<label><input class="co" type="number" min="1" max="20" value="1" aria-label="Coefficient for ${f}"><span class="f">${fmtFormula(f)}</span></label>`).join('')}<button class="btn pri" type="submit">Check</button></form>`; }
+  if (q.type === 'arrows') a = `<div class="atools"><button type="button" class="btn aundo">↶ Undo</button><button type="button" class="btn aclear">Clear</button><span class="acount"></span><button type="button" class="btn pri acheck">Check arrows</button></div><p class="amsg">Tap a lone pair or a bond to start an arrow.</p>`;
+  if (q.type === 'arrows') return `<div class="q"><div class="prompt">${q.prompt}</div><div class="vis mechvis">${mechScene(q.mech)}</div>${opts.noAnswer ? '' : a}<div class="fb" id="fb" aria-live="polite"></div></div>`;
   return `<div class="q"><div class="prompt">${q.prompt}</div>${q.type === 'balance' ? '' : ''}${q.visual ? `<div class="vis" id="vis">${q.visual}</div>` : ''}${q.geo ? `<div class="vis geo"><canvas id="qgeo"></canvas></div>` : ''}${opts.noAnswer ? '' : a}<div class="fb" id="fb" aria-live="polite"></div></div>`;
 }
 function mountGeo(q) { if (q.geo && $('#qgeo')) { const stop = vseprViewer($('#qgeo'), q.geo.sn, q.geo.lp, { center: q.geo.center }); const prev = cleanup; cleanup = () => { stop(); prev && prev(); }; } }
@@ -161,11 +163,12 @@ function grade(q, root) {
     if (q.type === 'mc') root.querySelectorAll('.opt').forEach(b => b.onclick = () => done(+b.dataset.k === q.answer, +b.dataset.k));
     else if (q.type === 'num') root.querySelector('form').onsubmit = e => { e.preventDefault(); const v = parseNum($('#inp').value); if (isNaN(v)) { $('#inp').classList.add('bad'); return; } const ok = q.abs != null && Math.abs(v - q.value) <= q.abs || Math.abs(v - q.value) <= Math.abs(q.value) * q.tol; done(ok, v); };
     else if (q.type === 'text') root.querySelector('form').onsubmit = e => { e.preventDefault(); const v = $('#inp').value; if (!v.trim()) return; done(!!q.check(v), v); };
+    else if (q.type === 'arrows') mountArrows(q, root, r => done(r.ok, r.given));
     else if (q.type === 'balance') root.querySelector('form').onsubmit = e => { e.preventDefault(); const co = [...root.querySelectorAll('.co')].map(x => +x.value); done(q.check(co), co); };
   });
 }
 function showResult(q, r, root, explain = true) {
-  root.querySelectorAll('.opt,input,button[type=submit]').forEach(e => e.disabled = true);
+  root.querySelectorAll('.opt,input,button[type=submit],.atools button').forEach(e => e.disabled = true);
   if (q.type === 'mc') root.querySelectorAll('.opt').forEach(b => { const k = +b.dataset.k; if (k === q.answer) b.classList.add('right'); else if (k === r.given) b.classList.add('wrong'); });
   if (q.visualAfter && $('#vis')) $('#vis').innerHTML = q.visualAfter;
   const ans = q.type === 'num' ? `${sig(q.value, 3)} ${q.unit || ''}` : q.type === 'text' || q.type === 'balance' ? q.answerText : '';
@@ -177,12 +180,13 @@ function watchView(c, body) {
   const q = newQ(c);
   let k = 0;
   const shown = q.type === 'mc' ? q.options[q.answer] : q.type === 'num' ? `${sig(q.value)} ${q.unit || ''}` : q.answerText;
+  if (q.type === 'arrows') q.steps = q.steps.map((s, i) => s);
   body.innerHTML = `<article class="page watch"><div class="pg">Worked example</div>${qHTML(q, { noAnswer: true })}
     <ol class="wsteps" id="ws"></ol><div class="pnav"><button class="btn" id="another">↻ Another example</button><button class="btn pri" id="step">Show step 1 →</button></div></article>`;
   mountGeo(q);
   const next = () => {
     if (k < q.steps.length) { const li = document.createElement('li'); li.innerHTML = q.steps[k]; $('#ws').appendChild(li); k++; }
-    if (k >= q.steps.length) { if (!$('#final')) { const d = document.createElement('div'); d.id = 'final'; d.className = 'final'; d.innerHTML = `Answer: <b>${shown}</b>`; $('#ws').after(d); if (q.visualAfter && $('#vis')) $('#vis').innerHTML = q.visualAfter; }
+    if (k >= q.steps.length) { if (!$('#final')) { const d = document.createElement('div'); d.id = 'final'; d.className = 'final'; d.innerHTML = `Answer: <b>${shown}</b>`; $('#ws').after(d); if (q.visualAfter && $('#vis')) $('#vis').innerHTML = q.visualAfter; if (q.type === 'arrows') { const g = body.querySelector('svg.mech .arrows'); g.innerHTML = q.mech.arrows.map((a, i) => `<path class="arw good" marker-end="url(#ahg)" d="${arrowPath(q.mech, a.split('>')[0], a.split('>')[1], i)}"/>`).join(''); } }
       $('#step').outerHTML = `<a class="btn pri" href="#/ch/${c.id}/do">Your turn →</a>`; }
     else $('#step').textContent = `Show step ${k + 1} →`;
   };
@@ -223,8 +227,8 @@ function serialQ(q) { try { return JSON.parse(JSON.stringify({ ...q, check: unde
 const EXAMS = {
   '1311': [['Exam 1: atoms & electrons', ['quantum', 'econfig', 'trends']], ['Exam 2: bonding & structure', ['ionic', 'formal', 'vsepr', 'imf']], ['Exam 3: reactions & moles', ['moles', 'balance', 'stoich', 'aqueous']], ['Exam 4: energy & gases', ['thermo', 'gas']], ['Final', null]],
   '1312': [['Exam 1: solutions & kinetics', ['colligative', 'kinetics']], ['Exam 2: equilibrium & acids', ['equilibrium', 'ph']], ['Exam 3: Ksp & free energy', ['ph', 'ksp', 'gibbs']], ['Exam 4: electro & nuclear', ['gibbs', 'electro', 'nuclear']], ['Final', null]],
-  '2323': [['Exam 1: structure & acids', ['bondline', 'fg', 'resonance', 'acidbase']], ['Exam 2: naming, conformations & stereo', ['naming', 'conform', 'stereo']], ['Exam 3: radicals, SN & E', ['radical', 'subelim']], ['Exam 4: alkene & alcohol reactions', ['reactions']], ['Final', null]],
-  '2325': [['Exam 1: spectroscopy', ['spectro', 'massspec']], ['Exam 2: aromatics', ['aromatic']], ['Exam 3: carbonyls & amines', ['carbonyl', 'amines']], ['Exam 4: enolates', ['enolates', 'carbonyl']], ['Final', null]],
+  '2323': [['Exam 1: structure & acids', ['bondline', 'fg', 'resonance', 'acidbase']], ['Exam 2: naming, conformations & stereo', ['naming', 'conform', 'stereo']], ['Exam 3: mechanisms, radicals, SN & E', ['mechanisms', 'radical', 'subelim']], ['Exam 4: reactions & synthesis', ['reactions', 'synth1']], ['Final', null]],
+  '2325': [['Exam 1: spectroscopy', ['spectro', 'spectra', 'massspec']], ['Exam 2: aromatics', ['aromatic']], ['Exam 3: carbonyls & amines', ['carbonyl', 'amines']], ['Exam 4: enolates & synthesis', ['enolates', 'synth2']], ['Final', null]],
   '3361': [['Exam 1: amino acids & proteins', ['aminoacids', 'proteins']], ['Exam 2: enzymes & carbs', ['enzymes', 'carbs']], ['Exam 3: metabolism', ['metabolism']], ['Final', null]],
 };
 function viewExam(sel) {
@@ -256,8 +260,9 @@ function viewExam(sel) {
     const prevClean = cleanup; cleanup = () => { geoStop && geoStop(); clearInterval(timer); };
     // restore previous answer
     const a = answers[i];
-    if (a != null) { if (q.type === 'mc') $$('.opt')[a.given]?.classList.add('picked'); else if (q.type === 'balance') $$('.co').forEach((x, k) => x.value = a.given[k]); else if ($('#inp')) $('#inp').value = a.raw; }
-    if (q.type === 'mc') $$('.opt').forEach(b => b.onclick = () => { $$('.opt').forEach(x => x.classList.remove('picked')); b.classList.add('picked'); answers[i] = { given: +b.dataset.k, ok: +b.dataset.k === q.answer }; mark(); });
+    if (a != null && q.type !== 'arrows') { if (q.type === 'mc') $$('.opt')[a.given]?.classList.add('picked'); else if (q.type === 'balance') $$('.co').forEach((x, k) => x.value = a.given[k]); else if ($('#inp')) $('#inp').value = a.raw; }
+    if (q.type === 'arrows') { if (a != null) main.querySelector('.amsg').textContent = 'Saved. You can redraw and check again.'; mountArrows(q, main.querySelector('.page'), r => { answers[i] = { given: r.given, ok: r.ok }; mark(); const pg = main.querySelector('.page'); delete pg.dataset.locked; pg.querySelectorAll('.atools button').forEach(b => b.disabled = false); main.querySelector('.amsg').textContent = 'Saved. Move on, or redraw and check again.'; main.querySelectorAll('svg.mech .arw.good').forEach(p => p.remove()); main.querySelectorAll('svg.mech .arw').forEach(p => p.classList.remove('right', 'wrong')); }); }
+    else if (q.type === 'mc') $$('.opt').forEach(b => b.onclick = () => { $$('.opt').forEach(x => x.classList.remove('picked')); b.classList.add('picked'); answers[i] = { given: +b.dataset.k, ok: +b.dataset.k === q.answer }; mark(); });
     else { const f = $('form'); const store = () => { if (q.type === 'balance') { const co = $$('.co').map(x => +x.value); answers[i] = { given: co, ok: q.check(co) }; } else { const raw = $('#inp').value; if (!raw.trim()) { answers[i] = null; return; } const ok = q.type === 'num' ? (() => { const v = parseNum(raw); return !isNaN(v) && (q.abs != null && Math.abs(v - q.value) <= q.abs || Math.abs(v - q.value) <= Math.abs(q.value) * q.tol); })() : !!q.check(raw); answers[i] = { raw, given: raw, ok }; } mark(); };
       f.oninput = store; f.onsubmit = e => { e.preventDefault(); store(); if (i < N - 1) { i++; draw(); } };
       const sb = f.querySelector('button[type=submit]'); if (sb) sb.textContent = 'Save'; }
