@@ -1,0 +1,26 @@
+/* ChemFluent skin for the Pushing electrons lab: same palette, ink outlines and hard shadows as the main site. */
+:root,:root:not([data-theme="light"]){--bg:transparent;--paper:#FFFFFF;--panel:#FFFFFF;--grid:#ECEEF7;--ink:#1D1B3A;--muted:#5E5A7A;--line:#1D1B3A;--arrow:#14A37F;--on-arrow:#FFFFFF;--pos:#3D6BFF;--neg:#FF4B4B;--soft:#E6FAF4}
+:root[data-theme="dark"]{--paper:#1C1B38;--panel:#1F1E3E;--grid:#2A2850;--ink:#F4F1FF;--muted:#B4AFD6;--line:#F4F1FF;--arrow:#2EC4A0;--on-arrow:#15142B;--pos:#7FA2FF;--neg:#FF7A7A;--soft:#1E3A36}
+body{padding-top:0}
+.wrap{padding-top:22px}
+header.pe-h{max-width:none;margin-bottom:22px}
+header.pe-h h1{font:800 clamp(28px,4vw,42px)/1.1 Unbounded,sans-serif;letter-spacing:-.02em}
+header.pe-h h1 em{font-style:normal;background:var(--c3);padding:0 10px;border:var(--bw) solid var(--ink);border-radius:10px;box-shadow:3px 3px 0 var(--ink)}
+.stage,aside.notes,nav.examples #exList,.try{border:var(--bw) solid var(--ink)!important;border-radius:var(--r)!important;box-shadow:var(--sh)!important;background:var(--panel)!important}
+aside.notes{padding:18px 20px}
+aside h2{font:800 20px Unbounded,sans-serif}
+#search{border:2px solid var(--ink)!important;border-radius:12px!important;background:var(--panel)!important;padding:8px 12px}
+.btn,#randBtn,.seg{border:var(--bw) solid var(--ink)!important;border-radius:12px!important;box-shadow:3px 3px 0 var(--ink)!important;font-weight:700}
+.btn:active,#randBtn:active{transform:translate(2px,2px);box-shadow:none!important}
+.btn.primary{background:var(--c4)!important;color:#10132A!important}
+.seg button[aria-pressed="true"]{background:var(--c3)!important;color:#10132A!important}
+.btn[aria-pressed="true"]{background:var(--c2)!important;color:#fff!important}
+.ex-btn{border-radius:10px!important}
+.ex-btn[aria-current="true"],.ex-btn.on{background:var(--c3)!important;color:#10132A!important;border:2px solid var(--ink)!important}
+details{border:2px solid var(--ink)!important;border-radius:12px!important}
+#steps li.active{background:var(--soft)!important;border-color:var(--ink)!important}
+.pe-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pe-chips span{border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700;background:var(--panel2)}
+header.top{max-width:none;margin:0}
+.logo{gap:0}.logo .tile{margin-right:10px}
+.ex-btn[aria-current="true"],.ex-btn[aria-current="true"] *{color:#10132A!important}
