@@ -420,3 +420,20 @@ svg.twist{max-width:240px}svg.twist .pf{fill:var(--c1);opacity:.75;stroke:var(--
 .trick b:first-child{font:800 12px Unbounded,sans-serif;letter-spacing:.03em;margin-right:4px}
 .lfig{margin:14px 0;padding:12px;border:2px dashed color-mix(in srgb,var(--ink) 30%,transparent);border-radius:14px}
 .page .ogal{margin:12px 0}.page ol li,.page ul li{margin:4px 0;line-height:1.5}
+/* general chemistry diagrams (genlearn.js) */
+svg.gdia{width:100%;max-width:460px;height:auto;font-family:"Atkinson Hyperlegible",sans-serif}
+svg.gdia line,svg.gdia path{stroke:var(--ink);stroke-width:2;fill:none}
+svg.gdia .ax{stroke-width:2.4}svg.gdia .lv{stroke-width:3}svg.gdia .dash{stroke-dasharray:5 5;opacity:.6}
+svg.gdia text{fill:var(--ink);font-size:12px;text-anchor:middle;font-weight:700}svg.gdia .al{fill:var(--muted);font-size:12px;text-anchor:middle}
+svg.gdia .lb.l{text-anchor:start}svg.gdia .lb.r{text-anchor:end}svg.gdia .big{font:800 16px Unbounded,sans-serif;fill:var(--muted);opacity:.7}
+svg.gdia .cv,svg.gdia .cv2{fill:none;stroke:var(--c2);stroke-width:3;stroke-linejoin:round}svg.gdia .cv2{stroke:var(--c4);stroke-dasharray:7 5}
+svg.gdia .draw{stroke-dasharray:1600;stroke-dashoffset:1600;animation:drawArw 1.8s ease forwards}svg.gdia .cv2.draw{animation-delay:.6s}
+svg.gdia .tr{stroke-width:3;stroke-dasharray:300;stroke-dashoffset:300;animation:drawArw .8s ease forwards}svg.gdia marker path{fill:var(--ink);stroke:none}
+svg.gdia .c1{stroke:#e5484d}svg.gdia .c2{stroke:#2ec4a0}svg.gdia .c3{stroke:var(--c5)}svg.gdia .c4{stroke:#3D6BFF}svg.gdia .c5{stroke:#8e4ec6}
+svg.gdia .br{stroke:var(--c1);stroke-width:2.5}svg.gdia .pt{fill:var(--c1);stroke:var(--ink);stroke-width:2}
+svg.gdia .beak{fill:color-mix(in srgb,var(--c2) 5%,transparent);stroke:var(--ink);stroke-width:2.5}svg.gdia .sol{stroke:none;opacity:.35}svg.gdia .c2f{fill:#9aa7b8}svg.gdia .c1f{fill:#3D6BFF}
+svg.gdia .elec{fill:#8a8f98;stroke:var(--ink);stroke-width:2}svg.gdia .elec.c{fill:#c97a3d}svg.gdia .salt{stroke:#c9a227;stroke-width:12;opacity:.6}svg.gdia .wire{stroke-width:2.5}
+svg.gdia .volt{fill:var(--c3);stroke:var(--ink);stroke-width:2}svg.gdia .e{fill:var(--c2);stroke:none}svg.gdia .gm{fill:var(--c1);stroke:var(--ink);stroke-width:1.5}
+.obrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.obox{display:flex;align-items:center;gap:4px}.obox b{font:800 13px Unbounded,sans-serif;margin-right:4px}.obox span{display:inline-grid;place-items:center;width:34px;height:34px;border:2px solid var(--ink);font:800 16px sans-serif;background:var(--paper)}
+@media (prefers-reduced-motion:reduce){svg.gdia .draw,svg.gdia .tr{animation:none;stroke-dashoffset:0}}
