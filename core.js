@@ -6,17 +6,22 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 
 /* ---------- courses (from UT Dallas syllabi) ---------- */
 const COURSES = [
-  { id: '1311', name: 'General Chemistry I', code: 'CHEM 1311', book: 'Burdge & Overby, Chemistry: Atoms First', color: '#2EF2C2' },
-  { id: '1312', name: 'General Chemistry II', code: 'CHEM 1312', book: 'Burdge & Overby, Chemistry: Atoms First', color: '#3CC8FF' },
-  { id: '2323', name: 'Organic Chemistry I', code: 'CHEM 2323', book: 'Wade, Organic Chemistry · Klein, Organic Chemistry I as a Second Language', color: '#FFB547' },
-  { id: '2325', name: 'Organic Chemistry II', code: 'CHEM 2325', book: 'Wade, Organic Chemistry · Klein, Organic Chemistry II as a Second Language', color: '#FF5FB7' },
-  { id: '3361', name: 'Biochemistry I', code: 'BIOL/CHEM 3361', book: 'Lehninger, Principles of Biochemistry', color: '#B6F25C' },
+  { id: '1311', name: 'General Chemistry I', code: 'CHEM 1311', book: 'Burdge & Overby, Chemistry: Atoms First', color: '#FF8A6B' },
+  { id: '1312', name: 'General Chemistry II', code: 'CHEM 1312', book: 'Burdge & Overby, Chemistry: Atoms First', color: '#7FA2FF' },
+  { id: '2323', name: 'Organic Chemistry I', code: 'CHEM 2323', book: 'Wade, Organic Chemistry · Klein, Organic Chemistry I as a Second Language', color: '#FFC93C' },
+  { id: '2325', name: 'Organic Chemistry II', code: 'CHEM 2325', book: 'Wade, Organic Chemistry · Klein, Organic Chemistry II as a Second Language', color: '#3ED1AC' },
+  { id: '3361', name: 'Biochemistry I', code: 'BIOL/CHEM 3361', book: 'Lehninger, Principles of Biochemistry', color: '#C29BFF' },
 ];
 const COURSE_OF = { econfig: '1311', formal: '1311', vsepr: '1311', moles: '1311', balance: '1311', stoich: '1311', gas: '1311', ph: '1312', bondline: '2323', fg: '2323', resonance: '2323', acidbase: '2323', naming: '2323', stereo: '2323', subelim: '2323', reactions: '2323', spectro: '2325' };
 CH.forEach(c => { c.course = c.course || COURSE_OF[c.id] || (c.unit === 'gen' ? '1311' : '2323'); });
 const ORDER = ['quantum', 'econfig', 'trends', 'ionic', 'formal', 'vsepr', 'imf', 'moles', 'balance', 'stoich', 'aqueous', 'thermo', 'gas', 'colligative', 'kinetics', 'equilibrium', 'ph', 'ksp', 'gibbs', 'electro', 'nuclear', 'bondline', 'fg', 'resonance', 'acidbase', 'naming', 'conform', 'stereo', 'radical', 'subelim', 'reactions', 'spectro', 'massspec', 'aromatic', 'carbonyl', 'amines', 'enolates', 'aminoacids', 'proteins', 'enzymes', 'carbs', 'metabolism'];
 CH.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id));
 const chById = id => CH.find(c => c.id === id);
+const SYMS = { quantum: 'Qu', econfig: 'Ec', trends: 'Tr', ionic: 'Io', formal: 'Fc', vsepr: 'Vs', imf: 'Im', moles: 'Mo', balance: 'Ba', stoich: 'St', aqueous: 'Aq', thermo: 'Th', gas: 'Gs', colligative: 'Cg', kinetics: 'Ki', equilibrium: 'Eq', ph: 'Ph', ksp: 'Ks', gibbs: 'Gb', electro: 'El', nuclear: 'Nu', bondline: 'Bl', fg: 'Fg', resonance: 'Rs', acidbase: 'Ab', naming: 'Nm', conform: 'Cn', stereo: 'Sr', radical: 'Rd', subelim: 'Sn', reactions: 'Rx', spectro: 'Ir', massspec: 'Ms', aromatic: 'Ar', carbonyl: 'Cb', amines: 'Am', enolates: 'En', aminoacids: 'Aa', proteins: 'Pr', enzymes: 'Ez', carbs: 'Cs', metabolism: 'Mt' };
+const symOf = c => SYMS[c.id] || c.title.slice(0, 2);
+const zOf = c => CH.indexOf(c) + 1;
+function tile(c, co, i = 0) { const m = mastery(c.id); return `<a class="ccard ${m >= 80 ? 'mastered' : ''}" href="#/ch/${c.id}" style="--cc:${co.color};animation-delay:${i * 35}ms" aria-label="${c.title}, ${m}% mastered"><span class="zn"><span>${zOf(c)}</span><span>${c.emoji}</span></span><span class="sym">${symOf(c)}</span><b>${c.title}</b><small>${c.blurb}</small><span class="m"><span class="meter"><i style="width:${m}%"></i></span>${m >= 80 ? 'Mastered' : m ? m + '%' : 'New'}</span></a>`; }
+function flaskMeter(p) { const y = 78 - p / 100 * 50; return `<div class="mflask" aria-label="${p}% mastered"><svg viewBox="0 0 70 84"><defs><clipPath id="fc"><path d="M24 4h22v22l20 46a6 6 0 0 1-6 8H10a6 6 0 0 1-6-8l20-46z"/></clipPath></defs><g clip-path="url(#fc)"><rect class="l" x="0" y="${y}" width="70" height="90"/></g><path class="g" fill="none" d="M24 4h22v22l20 46a6 6 0 0 1-6 8H10a6 6 0 0 1-6-8l20-46z" style="fill:none"/><path d="M20 4h30" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/></svg><div>${p}%</div></div>`; }
 
 /* ---------- saved progress ---------- */
 const KEY = 'chemfluent-v1';
@@ -86,7 +91,7 @@ function viewHome() {
   <section class="hero">
     <div class="hero-txt">
       <div class="kick">Chemistry as a second language</div>
-      <h1>Learn it. Watch it.<br><span>Do it until it's automatic.</span></h1>
+      <h1>Learn it. Watch it.<br><span>Do it</span> until it's automatic.</h1>
       <p>Every chapter teaches one skill the way a great textbook does, shows a worked example step by step, then gives you endless fresh problems until it clicks. Built around UT Dallas Gen Chem I &amp; II, Organic I &amp; II and Biochemistry.</p>
       <div class="cta"><a class="btn pri" href="#/ch/${next.id}">${S.xp ? 'Continue' : 'Start'}: ${next.title} →</a><a class="btn" href="#/exam">Take a practice exam</a></div>
     </div>
@@ -98,14 +103,15 @@ function viewHome() {
   </section>
   ${S.miss.length ? `<a class="banner" href="#/review"><b>🔁 ${S.miss.length} question${S.miss.length > 1 ? 's' : ''} to redo.</b> Clearing your mistakes is the fastest way to raise your exam score. →</a>` : ''}
   ${COURSES.map(co => { const chs = CH.filter(c => c.course === co.id); if (!chs.length) return '';
-    return `<section class="course"><div class="course-h"><div><span class="code" style="color:${co.color}">${co.code}</span><h2>${co.name}</h2><small>Textbook: ${co.book}</small></div>${ring(chs.reduce((s, c) => s + mastery(c.id), 0) / chs.length, co.color, 52)}</div>
-    <div class="cgrid">${chs.map((c, i) => `<a class="ccard" href="#/ch/${c.id}" style="--cc:${co.color};animation-delay:${i * 40}ms"><span class="em">${c.emoji}</span><b>${c.title}</b><small>${c.blurb}</small><span class="m">${ring(mastery(c.id), co.color, 30)}<i>${mastery(c.id) >= 80 ? 'Mastered ⭐' : mastery(c.id) ? mastery(c.id) + '%' : 'New'}</i></span></a>`).join('')}</div></section>`; }).join('')}`;
+    return `<section class="course" style="--cc:${co.color}"><div class="course-h"><div><span class="code">${co.code}</span><h2>${co.name}</h2><small>Textbook: ${co.book}</small></div>${ring(chs.reduce((s, c) => s + mastery(c.id), 0) / chs.length, co.color, 52)}</div>
+    <div class="cgrid">${chs.map((c, i) => tile(c, co, i)).join('')}</div></section>`; }).join('')}`;
 }
 function heroArt() {
-  return `<svg viewBox="0 0 320 260"><g class="orb"><ellipse cx="160" cy="130" rx="120" ry="42"/><ellipse cx="160" cy="130" rx="120" ry="42" transform="rotate(60 160 130)"/><ellipse cx="160" cy="130" rx="120" ry="42" transform="rotate(120 160 130)"/></g>
-  <circle class="nuc" cx="160" cy="130" r="22"/><g class="e"><circle r="7"><animateMotion dur="3.2s" repeatCount="indefinite" path="M40,130 a120,42 0 1,0 240,0 a120,42 0 1,0 -240,0"/></circle></g>
-  <g class="e" transform="rotate(60 160 130)"><circle r="7"><animateMotion dur="4s" repeatCount="indefinite" path="M40,130 a120,42 0 1,0 240,0 a120,42 0 1,0 -240,0"/></circle></g>
-  <g class="e" transform="rotate(120 160 130)"><circle r="7"><animateMotion dur="2.6s" repeatCount="indefinite" path="M40,130 a120,42 0 1,1 240,0 a120,42 0 1,1 -240,0"/></circle></g></svg>`;
+  return `<svg class="flask" viewBox="0 0 330 330" aria-hidden="true"><defs><clipPath id="hc"><path d="M130 40h70v80l78 150a18 18 0 0 1-16 26H68a18 18 0 0 1-16-26l78-150z"/></clipPath></defs>
+  <g clip-path="url(#hc)"><g class="wave"><path class="liq" d="M0 190 q30 -18 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 V340 H0z"/></g>
+  <circle class="bub" cx="140" cy="290" r="9"/><circle class="bub" cx="180" cy="300" r="6"/><circle class="bub" cx="200" cy="285" r="11"/><circle class="bub" cx="160" cy="300" r="5"/></g>
+  <path class="glass" fill="none" d="M130 40h70v80l78 150a18 18 0 0 1-16 26H68a18 18 0 0 1-16-26l78-150z"/><path d="M118 40h94" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>
+  <g class="mol"><line x1="268" y1="70" x2="300" y2="40"/><line x1="268" y1="70" x2="300" y2="100"/><circle cx="268" cy="70" r="14" fill="#FF6B4A"/><circle cx="300" cy="40" r="9" fill="#FFFDF7"/><circle cx="300" cy="100" r="9" fill="#FFFDF7"/></g></svg>`;
 }
 
 /* ---------- chapter ---------- */
@@ -113,7 +119,7 @@ function viewChapter(c, tab) {
   const co = COURSES.find(x => x.id === c.course);
   const st = chState(c.id);
   main.innerHTML = `<header class="chhead" style="--cc:${co.color}"><a class="back" href="#/">← All chapters</a>
-    <div class="chtitle"><span class="em big">${c.emoji}</span><div><span class="code" style="color:${co.color}">${co.code} · ${co.name}</span><h1>${c.title}</h1><p>${c.blurb}</p></div>${ring(mastery(c.id), co.color, 64)}</div>
+    <div class="chtitle"><div class="bigtile"><small>${zOf(c)}</small><b>${symOf(c)}</b><i>${c.emoji}</i></div><div><span class="code">${co.code} · ${co.name}</span><h1>${c.title}</h1><p>${c.blurb}</p></div>${flaskMeter(mastery(c.id))}</div>
     <nav class="tabs" role="tablist">${[['learn', '📖 Learn'], ['watch', '👀 Watch me'], ['do', '✍️ Your turn']].map(([k, l]) => `<a role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" href="#/ch/${c.id}/${k}">${l}</a>`).join('')}</nav></header><div id="body"></div>`;
   const body = $('#body');
   if (tab === 'learn') learnView(c, body, st);
@@ -197,7 +203,7 @@ function practiceView(c, body) {
     if (!r.ok) S.miss[0] && (S.miss[0].q = serialQ(q));
     save();
     showResult(q, r, body);
-    if (r.ok) { pop('+10 XP'); window.fxBurst && fxBurst(body.querySelector('.verdict')); }
+    if (r.ok) { pop('+10 XP'); window.fxFizz && fxFizz(body.querySelector('.verdict')); }
     $('#after').hidden = false; n++;
     $('#nextq').onclick = one; $('#nextq').focus();
   };
@@ -224,7 +230,7 @@ const EXAMS = {
 function viewExam(sel) {
   if (!sel) {
     main.innerHTML = `<header class="chhead"><h1>📝 Exam simulator</h1><p>Timed, no hints, graded at the end, just like the real thing. Pick an exam modeled on the UT Dallas syllabus.</p></header>
-    ${COURSES.map(co => EXAMS[co.id] ? `<section class="course"><div class="course-h"><div><span class="code" style="color:${co.color}">${co.code}</span><h2>${co.name}</h2></div></div><div class="cgrid">${EXAMS[co.id].map(([nm, chs], i) => { const list = (chs || CH.filter(c => c.course === co.id).map(c => c.id)).map(chById).filter(Boolean);
+    ${COURSES.map(co => EXAMS[co.id] ? `<section class="course" style="--cc:${co.color}"><div class="course-h"><div><span class="code">${co.code}</span><h2>${co.name}</h2></div></div><div class="cgrid">${EXAMS[co.id].map(([nm, chs], i) => { const list = (chs || CH.filter(c => c.course === co.id).map(c => c.id)).map(chById).filter(Boolean);
       return `<a class="ccard" style="--cc:${co.color}" href="#/exam/${co.id}-${i}"><span class="em">⏱️</span><b>${nm}</b><small>${list.map(c => c.title).join(' · ')}</small><span class="m"><i>${chs ? 12 : 20} questions · ${chs ? 30 : 50} min</i></span></a>`; }).join('')}</div></section>` : '').join('')}
     <section class="course"><div class="cgrid"><a class="ccard" href="#/exam/all-0" style="--cc:#fff"><span class="em">🧠</span><b>Everything mix</b><small>Random questions from every chapter</small><span class="m"><i>20 questions · 50 min</i></span></a></div></section>
     ${S.exams.length ? `<section class="course"><h2>Past attempts</h2><table class="tbl">${S.exams.slice(0, 8).map(e => `<tr><td>${e.d}</td><td>${e.name}</td><td><b>${e.pct}%</b></td></tr>`).join('')}</table></section>` : ''}`;
@@ -322,7 +328,7 @@ function viewCards() {
 }
 
 /* ---------- toolbox ---------- */
-const CATCOL = { alkali: '#FF7B7B', alkaline: '#FFB86B', transition: '#7FA9FF', 'post-transition': '#9FB4C7', metalloid: '#43D9A0', nonmetal: '#5EE0E0', halogen: '#C49BFF', noble: '#FF7BAC', lanthanide: '#E9C46A', actinide: '#D8A48F' };
+const CATCOL = { alkali: '#FF8A6B', alkaline: '#FFB38A', transition: '#9DB7FF', 'post-transition': '#C9C6DA', metalloid: '#7FE3C8', nonmetal: '#FFE08A', halogen: '#C29BFF', noble: '#FF9CC9', lanthanide: '#FFD3A1', actinide: '#E9B8A6' };
 function viewTools(t = 'table') {
   main.innerHTML = `<header class="chhead"><h1>🧰 Toolbox</h1><nav class="tabs">${[['table', '🧪 Periodic table'], ['mm', '⚖️ Molar mass'], ['pka', '📋 pKa table']].map(([k, l]) => `<a class="${t === k ? 'on' : ''}" href="#/tools/${k}">${l}</a>`).join('')}</nav></header><div id="body"></div>`;
   const body = $('#body');
@@ -358,7 +364,7 @@ function confetti() {
 /* ---------- theme, menu, keyboard ---------- */
 const theme = (() => { try { return localStorage.getItem('cf-theme'); } catch (e) { return null; } })();
 if (theme) document.documentElement.dataset.theme = theme;
-$('#themeBtn').onclick = () => { const cur = document.documentElement.dataset.theme || 'dark'; const nx = cur === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = nx; try { localStorage.setItem('cf-theme', nx); } catch (e) { } };
+$('#themeBtn').onclick = () => { const cur = document.documentElement.dataset.theme || 'light'; const nx = cur === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = nx; try { localStorage.setItem('cf-theme', nx); } catch (e) { } };
 $('#menuBtn').onclick = () => document.body.classList.toggle('menu-open');
 addEventListener('keydown', e => {
   if (e.target.matches('input,textarea')) return;
