@@ -415,3 +415,8 @@ svg.twist{max-width:240px}svg.twist .pf{fill:var(--c1);opacity:.75;stroke:var(--
 .ogi svg.newman{width:150px;max-width:150px}.ovz svg.mol .hl{fill-opacity:.6}
 .vis .ovz>svg.mol{width:auto;max-width:100%;min-width:230px;max-height:240px}
 #oTw label{display:block}#oTw label input{display:block;width:100%;margin-top:4px}
+.trick{margin:14px 0;padding:10px 14px;border:var(--bw) solid var(--ink);border-radius:12px;background:color-mix(in srgb,var(--c3) 28%,var(--paper));box-shadow:3px 3px 0 var(--ink);line-height:1.5}
+.trick.warn{background:color-mix(in srgb,var(--c1) 16%,var(--paper))}
+.trick b:first-child{font:800 12px Unbounded,sans-serif;letter-spacing:.03em;margin-right:4px}
+.lfig{margin:14px 0;padding:12px;border:2px dashed color-mix(in srgb,var(--ink) 30%,transparent);border-radius:14px}
+.page .ogal{margin:12px 0}.page ol li,.page ul li{margin:4px 0;line-height:1.5}
