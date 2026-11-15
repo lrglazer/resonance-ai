@@ -365,7 +365,7 @@ LABS.push({
         $('#fpP').innerHTML = plot({ x: [0, 480], y: [30, 62], xl: 'time (s)', yl: 'T (°C)', series: [{ pts, type: 'line', cls: 'c1' }] });
         if (t < 480) raf = requestAnimationFrame(st); else nb.log([pure ? 'Lauric acid' : 'Lauric acid + unknown', pure ? '0' : ms.toFixed(3), fx(Tf + jit(.05), 1)]); };
       raf = requestAnimationFrame(st); };
-    $('#fpA').onclick = () => run(43.8, true); $('#fpB').onclick = () => run(Tfs, false); return () => cancelAnimationFrame(raf);
+    $('#fpA').onclick = () => run(43.8, true); $('#fpB').onclick = () => run(Tfs, false); $('#fpV').innerHTML = `<div class="bench">${tubeSVG('rgba(250,245,215,.6)', 'pure', .6)}</div>`; return () => cancelAnimationFrame(raf);
   },
   post: [
     () => { const g = R.real(.9, 1.3, 3), dT = R.real(3.0, 5.0, 2), mm = g / (dT / 3.9 * .008); return numQ(`${g} g of unknown in 8.00 g lauric acid (K<sub>f</sub> = 3.9) lowers the freezing point by ${dT} °C. Molar mass?`, mm, 'g/mol', [`m = ΔT/K<sub>f</sub> = ${dT}/3.9 = ${sig(dT / 3.9, 3)} mol/kg`, `mol = ${sig(dT / 3.9, 3)} × 0.00800 kg = ${sig(dT / 3.9 * .008, 3)} mol`, `MM = ${g} / ${sig(dT / 3.9 * .008, 3)} = <b>${sig(mm, 3)} g/mol</b>`]); },

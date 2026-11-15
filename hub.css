@@ -321,7 +321,7 @@ svg.fischer{max-width:300px}svg.fischer line{stroke-width:3.2}
 .proc li{margin:6px 0}.safety{margin:16px 0;padding:12px 14px;border:2px dashed var(--ink);border-radius:12px;background:color-mix(in srgb,var(--c3) 25%,var(--panel));font-weight:700}
 .given{font-weight:700;margin:0 0 10px}
 .rig{display:grid;grid-template-columns:minmax(220px,1fr) 1.2fr;gap:18px;align-items:start}
-.rig-l{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px;border:var(--bw) solid var(--ink);border-radius:16px;background:var(--panel2);min-height:260px;justify-content:center}
+.rig-l>div{width:100%;display:flex;flex-direction:column;align-items:center}.rig-l svg:not([width]){max-width:100%}.spectro{width:100%;max-width:320px}.balance{width:100%;max-width:220px}.rig-l{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px;border:var(--bw) solid var(--ink);border-radius:16px;background:var(--panel2);min-height:260px;justify-content:center}
 .rig-r{display:flex;flex-direction:column;gap:10px}
 .bench{display:flex;gap:16px;align-items:flex-end;justify-content:center;flex-wrap:wrap}.bench .col,.exflasks .col{display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700}.bench .col b{font:800 18px Unbounded,sans-serif}
 .stand{display:flex;align-items:flex-end;gap:0}.bwrap svg{height:300px}.fwrap{display:flex;flex-direction:column;align-items:center;margin-left:-30px}.fwrap svg{width:130px}.tag{font-size:12px;font-weight:700;color:var(--muted);text-align:center;max-width:150px}
