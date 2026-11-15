@@ -437,3 +437,22 @@ svg.gdia .volt{fill:var(--c3);stroke:var(--ink);stroke-width:2}svg.gdia .e{fill:
 .obrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
 .obox{display:flex;align-items:center;gap:4px}.obox b{font:800 13px Unbounded,sans-serif;margin-right:4px}.obox span{display:inline-grid;place-items:center;width:34px;height:34px;border:2px solid var(--ink);font:800 16px sans-serif;background:var(--paper)}
 @media (prefers-reduced-motion:reduce){svg.gdia .draw,svg.gdia .tr{animation:none;stroke-dashoffset:0}}
+
+/* floating pills: keep "Study Board" off the sidebar (desktop) and off the hero buttons (phones) */
+@media (min-width:901px){body #qbtn{left:auto;right:18px;bottom:76px}}
+@media (max-width:900px){
+  body #qbtn,body .rqbtn{bottom:max(12px,env(safe-area-inset-bottom));padding:8px 13px;font-size:13px;box-shadow:2px 2px 0 currentColor}
+  body #qbtn{left:12px}body .rqbtn{right:12px}
+  body{padding-bottom:72px}
+}
+
+/* "In plain English" lesson openers + tap-to-define terms */
+.plain{position:relative;margin:0 0 18px;padding:14px 16px 14px 18px;border:2.5px solid var(--ink);border-radius:14px;background:color-mix(in srgb,var(--c3) 22%,var(--panel));box-shadow:3px 3px 0 var(--ink);animation:plainIn .45s cubic-bezier(.2,1.3,.4,1) both}
+.plain-tag{display:inline-block;margin:0 0 6px;padding:2px 10px;border:2px solid var(--ink);border-radius:999px;background:var(--c3);color:#10132A;font:800 11px/1.5 Unbounded,"Arial Black",sans-serif;letter-spacing:.06em;text-transform:uppercase;transform:rotate(-1.5deg)}
+.plain p{margin:0;font-size:17px;line-height:1.55}
+@keyframes plainIn{from{opacity:0;transform:translateY(8px)}}
+.gl{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:help;text-decoration:underline dotted 2px;text-decoration-color:var(--acc2,#3D6BFF);text-underline-offset:3px}
+.gl:hover,.gl[aria-expanded="true"]{background:color-mix(in srgb,var(--c3) 45%,transparent);border-radius:4px}
+.gl-pop{position:absolute;z-index:30;display:block;max-width:min(320px,86vw);margin-top:6px;padding:9px 12px;border:2.5px solid var(--ink);border-radius:12px;background:var(--panel);color:var(--ink);box-shadow:3px 3px 0 var(--ink);font-size:15px;line-height:1.45;font-weight:400;animation:plainIn .2s ease both}
+.gl-pop b{font-weight:800;margin-right:2px}
+@media (prefers-reduced-motion:reduce){.plain,.gl-pop{animation:none}}

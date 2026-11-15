@@ -1,6 +1,6 @@
-/* Shared "Request a course" button + form. Opens the visitor's email app with the request filled in. */
+/* Shared "Request a course" button + form. Sends the request to the owner dashboard inbox (never email). */
 (() => {
-  const TO = 'lrglazer@icloud.com', SITE = document.title.split(/[:—–|]/)[0].trim();
+  const INBOX = 'https://chalktalkstudy.com/api/inbox', SITE = document.title.split(/[:—–|]/)[0].trim();
   const css = `.rqbtn{position:fixed;right:18px;bottom:18px;z-index:60;font:700 14px system-ui,sans-serif;padding:10px 16px;border-radius:999px;border:2px solid currentColor;background:var(--panel,#fff);color:var(--ink,#111);cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.18)}
   .rqbtn:hover{transform:translateY(-2px)}
   .rqwrap{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.45);display:grid;place-items:center;padding:16px}
@@ -23,11 +23,14 @@
       <label>Textbook (optional) <input name="book" placeholder="title or author"></label>
       <label>Anything else? (optional) <textarea name="notes" placeholder="topics, exam dates, what you struggle with"></textarea></label>
       <div class="rqrow"><button type="button" class="x">Cancel</button><button type="submit" class="go">Send request</button></div></form>`;
-    document.body.appendChild(w); w.querySelector('input').focus();
+    document.body.appendChild(w); w.querySelector('input').focus(); const t0 = Date.now();
     const close = () => w.remove(); w.querySelector('.x').onclick = close; w.onclick = e => { if (e.target === w) close(); };
     w.querySelector('form').onsubmit = e => { e.preventDefault(); const f = new FormData(e.target);
       const body = `Course: ${f.get('course')}\nSchool: ${f.get('school') || '-'}\nTextbook: ${f.get('book') || '-'}\n\n${f.get('notes') || ''}\n\n(sent from ${SITE})`;
-      location.href = `mailto:${TO}?subject=${encodeURIComponent('Course request for ' + SITE + ': ' + f.get('course'))}&body=${encodeURIComponent(body)}`; setTimeout(close, 400); };
+      const box = e.target.querySelector('.rqrow'); box.innerHTML = '<span>Sending…</span>';
+      fetch(INBOX, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ site: 'chemfluent', kind: 'request', message: body.slice(0, 2000), page: location.href, t: Date.now() - t0 }) })
+        .then(r => { if (!r.ok) throw 0; box.innerHTML = '<b>Got it, thanks! We read every request.</b>'; setTimeout(close, 1600); })
+        .catch(() => { box.innerHTML = "<span>That didn't send. Please try again in a minute.</span>"; setTimeout(close, 2200); }); };
     addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); removeEventListener('keydown', esc); } });
   };
 })();

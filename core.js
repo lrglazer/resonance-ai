@@ -27,7 +27,7 @@ function flaskMeter(p) { const y = 78 - p / 100 * 50; return `<div class="mflask
 const KEY = 'chemfluent-v1';
 const S = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } })();
 S.xp ??= 0; S.ch ??= {}; S.cards ??= {}; S.miss ??= []; S.days ??= {}; S.exams ??= [];
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } if (window.cfProgress) cfProgress(); };
 const today = () => new Date().toISOString().slice(0, 10);
 function chState(id) { return S.ch[id] ??= { att: 0, ok: 0, recent: [], learned: false }; }
 function mastery(id) { const r = chState(id).recent; if (!r.length) return 0; return Math.round(r.filter(Boolean).length / Math.max(r.length, 8) * 100); }
@@ -54,6 +54,7 @@ function renderNav() {
   const cur = location.hash;
   let h = `<a href="#/" class="nl ${cur === '#/' || cur === '' ? 'on' : ''}"><span class="ni">🏠</span>Home</a>
     <a href="#/exam" class="nl ${cur.startsWith('#/exam') ? 'on' : ''}"><span class="ni">📝</span>Exam simulator</a>
+    <a href="#/final" class="nl ${cur.startsWith('#/final') ? 'on' : ''}"><span class="ni">🎓</span>Finals &amp; report card</a>
     <a href="#/review" class="nl ${cur.startsWith('#/review') ? 'on' : ''}"><span class="ni">🔁</span>Mistake review${S.miss.length ? `<b class="badge">${Math.min(S.miss.length, 99)}</b>` : ''}</a>
     <a href="#/labs" class="nl ${cur.startsWith('#/lab') ? 'on' : ''}"><span class="ni">🥽</span>Virtual labs</a>
     <a href="#/cards" class="nl ${cur.startsWith('#/cards') ? 'on' : ''}"><span class="ni">🃏</span>Reaction flashcards</a>
@@ -75,6 +76,7 @@ function route() {
   window.scrollTo(0, 0);
   if (parts[0] === 'ch' && chById(parts[1])) viewChapter(chById(parts[1]), parts[2] || 'learn');
   else if (parts[0] === 'exam') viewExam(parts[1]);
+  else if (parts[0] === 'final' && window.cfViewFinal) cfViewFinal(parts[1]);
   else if (parts[0] === 'review') viewReview();
   else if (parts[0] === 'cards') viewCards();
   else if (parts[0] === 'tools') viewTools(parts[1]);
@@ -107,7 +109,9 @@ function viewHome() {
   ${S.miss.length ? `<a class="banner" href="#/review"><b>🔁 ${S.miss.length} question${S.miss.length > 1 ? 's' : ''} to redo.</b> Clearing your mistakes is the fastest way to raise your exam score. →</a>` : ''}
   ${COURSES.map(co => { const chs = CH.filter(c => c.course === co.id); if (!chs.length) return '';
     return `<section class="course" style="--cc:${co.color}"><div class="course-h"><div><span class="code">${co.code}</span><h2>${co.name}</h2><small>Textbook: ${co.book}</small></div>${ring(chs.reduce((s, c) => s + mastery(c.id), 0) / chs.length, co.color, 52)}</div>
-    <div class="cgrid">${chs.map((c, i) => tile(c, co, i)).join('')}</div></section>`; }).join('')}`;
+    <div class="cfcert" data-cfc="course:${co.id}"></div><div class="cgrid">${chs.map((c, i) => tile(c, co, i)).join('')}</div></section>`; }).join('')}
+  ${window.cfHomeReport ? cfHomeReport() : ''}
+  <div class="cfcert-wall" data-cfc="wall"></div>`;
 }
 function heroArt() {
   return `<svg class="flask" viewBox="0 0 330 330" aria-hidden="true"><defs><clipPath id="hc"><path d="M130 40h70v80l78 150a18 18 0 0 1-16 26H68a18 18 0 0 1-16-26l78-150z"/></clipPath></defs>
@@ -129,16 +133,52 @@ function viewChapter(c, tab) {
   else if (tab === 'watch') watchView(c, body);
   else practiceView(c, body);
 }
+/* "In plain English" opener (lesson.plain or CF_PLAIN) and tap-to-define jargon (CF_GLOSS); data in plain.js */
+function plainBox(c, i, L) {
+  const t = L.plain || (window.CF_PLAIN && CF_PLAIN[c.id] && CF_PLAIN[c.id][i]);
+  return t ? `<aside class="plain"><span class="plain-tag">In plain English</span><p>${t}</p></aside>` : '';
+}
+let glossRe = null;
+function glossify(root) {
+  const G = window.CF_GLOSS; if (!root || !G) return;
+  if (!glossRe) { const keys = Object.keys(G).sort((a, b) => b.length - a.length).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')); glossRe = new RegExp('\\b(' + keys.join('|') + ')(s|es)?\\b', 'i'); }
+  const skip = 'svg,button,a,sub,sup,th,code,.gl,.chip,.widget,.viewer';
+  const used = new Set(), walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest(skip) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const n of nodes) {
+    if (used.size >= 6) break;
+    const m = n.nodeValue.match(glossRe); if (!m) continue;
+    const key = Object.keys(G).find(k => k.toLowerCase() === m[1].toLowerCase()); if (!key || used.has(key)) continue;
+    used.add(key);
+    const after = n.splitText(m.index); after.nodeValue = after.nodeValue.slice(m[0].length);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'gl'; b.textContent = m[0]; b.dataset.def = G[key];
+    b.setAttribute('aria-expanded', 'false'); b.title = 'Tap for a definition';
+    n.parentNode.insertBefore(b, after);
+  }
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('.gl');
+  const open = b && b.getAttribute('aria-expanded') === 'true';
+  document.querySelectorAll('.gl-pop').forEach(p => p.remove());
+  document.querySelectorAll('.gl[aria-expanded="true"]').forEach(x => x.setAttribute('aria-expanded', 'false'));
+  if (!b || open) return;
+  const p = document.createElement('span'); p.className = 'gl-pop'; p.setAttribute('role', 'tooltip');
+  const t = document.createElement('b'); t.textContent = b.textContent; p.append(t, ' ' + b.dataset.def);
+  b.after(p); b.setAttribute('aria-expanded', 'true');
+  const r = p.getBoundingClientRect(); if (r.right > innerWidth - 8) p.style.marginLeft = (innerWidth - 8 - r.right) + 'px'; if (r.left < 8) p.style.marginLeft = (8 - r.left) + 'px';
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.gl-pop').forEach(p => p.remove()); });
 function learnView(c, body, st) {
   let i = 0;
   const draw = () => {
     if (cleanup) { cleanup(); cleanup = null; }
     const L = c.learn[i];
-    body.innerHTML = `<article class="page" aria-live="polite"><div class="pg">Lesson ${i + 1} of ${c.learn.length}</div><h2>${L.h}</h2>${L.body}
+    body.innerHTML = `<article class="page" aria-live="polite"><div class="pg">Lesson ${i + 1} of ${c.learn.length}</div><h2>${L.h}</h2>${plainBox(c, i, L)}<div class="lbody">${L.body}</div>
       ${c.viewer && i === 0 ? `<div class="viewer"><canvas id="v3d"></canvas><div class="vctl">${[[2, 0, 'Linear'], [3, 0, 'Trig. planar'], [3, 1, 'Bent'], [4, 0, 'Tetrahedral'], [4, 1, 'Pyramidal'], [4, 2, 'Bent (sp³)'], [5, 0, 'Trig. bipyramidal'], [5, 1, 'Seesaw'], [5, 2, 'T-shaped'], [6, 0, 'Octahedral'], [6, 1, 'Sq. pyramidal'], [6, 2, 'Sq. planar']].map(([s, l, n], k) => `<button class="chip ${k === 3 ? 'on' : ''}" data-s="${s}" data-l="${l}">${n}</button>`).join('')}</div><p class="tip">Drag to rotate. Blue lobes are lone pairs.</p></div>` : ''}
       ${c.launch && i === c.learn.length - 1 ? `<a class="btn pri launch" href="${c.launch}">Open the animated Pushing electrons lab →</a>` : ''}
       <div class="pnav"><button class="btn" id="prev" ${i ? '' : 'disabled'}>← Back</button><div class="dots">${c.learn.map((_, k) => `<i class="${k === i ? 'on' : k < i ? 'done' : ''}"></i>`).join('')}</div>
       ${i < c.learn.length - 1 ? '<button class="btn pri" id="next">Next →</button>' : `<a class="btn pri" href="#/ch/${c.id}/watch">Watch a worked example →</a>`}</div></article>`;
+    glossify(body.querySelector('.lbody'));
     $('#prev').onclick = () => { i--; draw(); };
     const n = $('#next'); if (n) n.onclick = () => { i++; draw(); };
     if (i === c.learn.length - 1 && !st.learned) { st.learned = true; save(); }
@@ -240,12 +280,14 @@ function viewExam(sel) {
   if (!sel) {
     main.innerHTML = `<header class="chhead"><h1>📝 Exam simulator</h1><p>Timed, no hints, graded at the end, just like the real thing. Pick an exam modeled on a typical course syllabus.</p></header>
     ${COURSES.map(co => EXAMS[co.id] ? `<section class="course" style="--cc:${co.color}"><div class="course-h"><div><span class="code">${co.code}</span><h2>${co.name}</h2></div></div><div class="cgrid">${EXAMS[co.id].map(([nm, chs], i) => { const list = (chs || CH.filter(c => c.course === co.id).map(c => c.id)).map(chById).filter(Boolean);
+      if (!chs && window.cfViewFinal) return `<a class="ccard" style="--cc:${co.color}" href="#/final/${co.id}"><span class="em">🎓</span><b>Graded final (open note)</b><small>Every chapter · review + cheat sheet · grade goes on your report card</small><span class="m"><i>${cfFinal.TOTAL} questions · 90 min</i></span></a>`;
       return `<a class="ccard" style="--cc:${co.color}" href="#/exam/${co.id}-${i}"><span class="em">⏱️</span><b>${nm}</b><small>${list.map(c => c.title).join(' · ')}</small><span class="m"><i>${chs ? 12 : 20} questions · ${chs ? 30 : 50} min</i></span></a>`; }).join('')}</div></section>` : '').join('')}
     <section class="course"><div class="cgrid"><a class="ccard" href="#/exam/all-0" style="--cc:#fff"><span class="em">🧠</span><b>Everything mix</b><small>Random questions from every chapter</small><span class="m"><i>20 questions · 50 min</i></span></a></div></section>
     ${S.exams.length ? `<section class="course"><h2>Past attempts</h2><table class="tbl">${S.exams.slice(0, 8).map(e => `<tr><td>${e.d}</td><td>${e.name}</td><td><b>${e.pct}%</b></td></tr>`).join('')}</table></section>` : ''}`;
     return;
   }
   const [cid, idx] = sel.split('-');
+  if (cid !== 'all' && EXAMS[cid] && EXAMS[cid][+idx] && !EXAMS[cid][+idx][1] && window.cfViewFinal) { location.replace('#/final/' + cid); return; }
   let name, chs;
   if (cid === 'all') { name = 'Everything mix'; chs = CH.map(c => c.id); }
   else { const e = EXAMS[cid][+idx]; name = `${COURSES.find(c => c.id === cid).code} ${e[0]}`; chs = e[1] || CH.filter(c => c.course === cid).map(c => c.id); }
@@ -281,7 +323,7 @@ function viewExam(sel) {
     clearInterval(timer);
     const score = answers.filter(a => a && a.ok).length, pct = Math.round(score / N * 100);
     const by = {}; qs.forEach((q, k) => { (by[q.ch] ??= [0, 0]); by[q.ch][1]++; if (answers[k] && answers[k].ok) by[q.ch][0]++; record(q.ch, !!(answers[k] && answers[k].ok), q); if (!(answers[k] && answers[k].ok)) { S.miss[0] && (S.miss[0].q = serialQ(q)); } });
-    S.exams.unshift({ d: today(), name, pct }); save();
+    S.exams.unshift({ d: today(), name, pct, at: Date.now(), cid: cid === 'all' ? '' : cid, score, max: N }); S.exams = S.exams.slice(0, 60); save();
     const weak = Object.entries(by).filter(([, [a, b]]) => a / b < .7).map(([id]) => chById(id));
     const grade = pct >= 90 ? 'A' : pct >= 80 ? 'B' : pct >= 70 ? 'C' : pct >= 60 ? 'D' : 'F';
     main.innerHTML = `<article class="page result"><div class="big">${pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : '📚'}</div><h2>${score} / ${N} · ${pct}% · ${grade}</h2><p>${name} · ${Math.round((Date.now() - t0) / 60000)} min</p>
